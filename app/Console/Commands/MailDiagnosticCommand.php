@@ -20,6 +20,12 @@ class MailDiagnosticCommand extends Command
             return;
         }
 
+        $password = $this->secret('Enter plain text password for this mailbox:');
+        if (!$password) {
+            $this->error("Password is required for IMAP diagnostic.");
+            return;
+        }
+
         $this->info("Starting Diagnostics for: $email");
 
         // Test SMTP
@@ -73,7 +79,7 @@ class MailDiagnosticCommand extends Command
         $ref = "{{$imapHost}:{$imapPort}{$flags}}INBOX";
         $this->line("Connection String: $ref");
         
-        $imap = @imap_open($ref, $email, $mailbox->password);
+        $imap = @imap_open($ref, $email, $password);
         if (!$imap) {
             $this->error("IMAP Connection Failed!");
             $this->error(print_r(imap_errors(), true));
