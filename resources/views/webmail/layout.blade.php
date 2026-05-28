@@ -57,7 +57,7 @@
     @if(isset($mailbox))
     <aside class="sidebar">
         <div class="brand" style="justify-content: center;">
-            <img src="{{ asset('images/logo.png') }}" alt="EdgeMail" style="height: 70px; width: auto; max-width: 200px; object-fit: contain;">
+            <img src="{{ asset('images/logo.png') }}" alt="EdgeMail" style="height: 90px; width: auto; max-width: 200px; object-fit: contain;">
         </div>
         <div class="compose-btn-wrap">
             <a href="{{ route('webmail.compose') }}" class="btn-compose">✏️ Compose</a>
