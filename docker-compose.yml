@@ -80,7 +80,6 @@ services:
       - ENABLE_POSTGREY=0
       - ONE_DIR=1
       - PERMIT_DOCKER=network
-      - SSL_TYPE=letsencrypt
     networks:
       - edgemail-net
 
