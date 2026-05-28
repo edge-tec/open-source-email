@@ -57,7 +57,8 @@ services:
   mail:
     image: mailserver/docker-mailserver:latest
     restart: unless-stopped
-    hostname: mail.${DOMAIN:-example.com}
+    hostname: mail
+    domainname: example.com
     container_name: edgemail-mailserver
     ports:
       - "25:25"    # SMTP
