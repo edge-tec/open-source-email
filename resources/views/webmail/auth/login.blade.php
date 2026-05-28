@@ -3,7 +3,7 @@
 
 @section('content')
     <div style="text-align:center; margin-bottom:1.5rem">
-        <img src="{{ asset('images/logo.png') }}" alt="EdgeMail Logo" style="height:80px">
+        <img src="{{ asset('images/logo.png') }}" alt="EdgeMail Logo" style="height:auto; max-height:120px; max-width:250px;">
     </div>
     <h2 class="card-title">EdgeMail Webmail</h2>
     <p class="card-desc">Log in to access your inbox and send emails.</p>

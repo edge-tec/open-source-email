@@ -10,9 +10,6 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <style>
         :root{--bg:#f8fafc;--bg2:#ffffff;--border:#e2e8f0;--t1:#0f172a;--t2:#475569;--t3:#94a3b8;--accent:#3b82f6;--accent2:#2563eb;--ok:#10b981;--err:#ef4444;--warn:#f59e0b;--bg-hover:#f1f5f9;--bg-active:#e0e7ff;--shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
-        @media (prefers-color-scheme: dark) {
-            :root{--bg:#0f172a;--bg2:#1e293b;--border:#334155;--t1:#f8fafc;--t2:#cbd5e1;--t3:#64748b;--bg-hover:#334155;--bg-active:rgba(59,130,246,.2);--shadow:0 4px 6px -1px rgba(0,0,0,.3)}
-        }
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);display:flex;height:100vh;overflow:hidden}
 

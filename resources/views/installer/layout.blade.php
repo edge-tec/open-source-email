@@ -9,17 +9,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0a0e1a;
-            --bg-secondary: #111827;
-            --bg-card: #1a1f35;
-            --bg-card-hover: #1f2544;
-            --border-color: #2a3154;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --border-color: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
             --text-muted: #64748b;
-            --accent: #6366f1;
-            --accent-hover: #818cf8;
-            --accent-glow: rgba(99, 102, 241, 0.3);
+            --accent: #4f46e5;
+            --accent-hover: #6366f1;
+            --accent-glow: rgba(79, 70, 229, 0.2);
             --success: #10b981;
             --success-bg: rgba(16, 185, 129, 0.1);
             --danger: #ef4444;
@@ -136,7 +136,7 @@
             border-radius: 16px;
             padding: 2rem;
             backdrop-filter: blur(12px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
         }
         .card-title {
             font-size: 1.25rem;
@@ -331,10 +331,6 @@
 </head>
 <body>
     <div class="installer-container">
-        <div class="brand">
-            <img src="{{ asset('images/logo.png') }}" alt="EdgeMail" style="height: 60px; margin-bottom: 0.5rem;">
-            <p>Open Source Email Server</p>
-        </div>
 
         @yield('steps')
 

@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1a1f35;--bg4:#1f2544;--border:#2a3154;--t1:#f1f5f9;--t2:#94a3b8;--t3:#64748b;--accent:#6366f1;--accent2:#818cf8;--glow:rgba(99,102,241,.3);--ok:#10b981;--err:#ef4444;--warn:#f59e0b;--info:#3b82f6}
+        :root{--bg:#f8fafc;--bg2:#ffffff;--bg3:#f1f5f9;--bg4:#e2e8f0;--border:#e2e8f0;--t1:#0f172a;--t2:#475569;--t3:#64748b;--accent:#4f46e5;--accent2:#6366f1;--glow:rgba(79,70,229,.2);--ok:#10b981;--err:#ef4444;--warn:#f59e0b;--info:#3b82f6}
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);display:flex;min-height:100vh}
         /* Sidebar */
@@ -43,8 +43,8 @@
         .table-title{font-size:.9rem;font-weight:600}
         table{width:100%;border-collapse:collapse}
         th{text-align:left;padding:.75rem 1.25rem;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);border-bottom:1px solid var(--border);font-weight:600}
-        td{padding:.75rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.03);font-size:.85rem;color:var(--t2)}
-        tr:hover td{background:rgba(255,255,255,.02)}
+        td{padding:.75rem 1.25rem;border-bottom:1px solid rgba(0,0,0,.05);font-size:.85rem;color:var(--t2)}
+        tr:hover td{background:rgba(0,0,0,.02)}
         /* Badges */
         .badge{display:inline-block;padding:.15rem .6rem;border-radius:20px;font-size:.7rem;font-weight:600}
         .badge-ok{background:rgba(16,185,129,.15);color:var(--ok)}.badge-err{background:rgba(239,68,68,.15);color:var(--err)}.badge-warn{background:rgba(245,158,11,.15);color:var(--warn)}.badge-info{background:rgba(59,130,246,.15);color:var(--info)}
