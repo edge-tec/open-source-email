@@ -23,7 +23,12 @@ class ImapService
 
     protected function connect(string $folder = 'INBOX'): void
     {
-        $flags = $this->encryption === 'ssl' ? '/imap/ssl/novalidate-cert' : '/imap/notls';
+        $flags = '/imap/notls';
+        if ($this->encryption === 'ssl') {
+            $flags = '/imap/ssl/novalidate-cert';
+        } elseif ($this->encryption === 'tls') {
+            $flags = '/imap/tls/novalidate-cert';
+        }
         $mailbox = "{{$this->host}:{$this->port}{$flags}}{$folder}";
 
         $password = session()->has('webmail_password') ? decrypt(session('webmail_password')) : $this->mailbox->password;
@@ -197,7 +202,12 @@ class ImapService
     public function getFolders(): array
     {
         $this->connect();
-        $flags = $this->encryption === 'ssl' ? '/imap/ssl/novalidate-cert' : '/imap/notls';
+        $flags = '/imap/notls';
+        if ($this->encryption === 'ssl') {
+            $flags = '/imap/ssl/novalidate-cert';
+        } elseif ($this->encryption === 'tls') {
+            $flags = '/imap/tls/novalidate-cert';
+        }
         $ref = "{{$this->host}:{$this->port}{$flags}}";
         $list = imap_list($this->connection, $ref, '*') ?: [];
 
@@ -304,7 +314,12 @@ class ImapService
     public function createFolder(string $name): void
     {
         $this->connect();
-        $flags = $this->encryption === 'ssl' ? '/imap/ssl/novalidate-cert' : '/imap/notls';
+        $flags = '/imap/notls';
+        if ($this->encryption === 'ssl') {
+            $flags = '/imap/ssl/novalidate-cert';
+        } elseif ($this->encryption === 'tls') {
+            $flags = '/imap/tls/novalidate-cert';
+        }
         imap_createmailbox($this->connection, imap_utf7_encode("{{$this->host}:{$this->port}{$flags}}{$name}"));
         $this->disconnect();
     }
@@ -312,7 +327,12 @@ class ImapService
     public function deleteFolder(string $name): void
     {
         $this->connect();
-        $flags = $this->encryption === 'ssl' ? '/imap/ssl/novalidate-cert' : '/imap/notls';
+        $flags = '/imap/notls';
+        if ($this->encryption === 'ssl') {
+            $flags = '/imap/ssl/novalidate-cert';
+        } elseif ($this->encryption === 'tls') {
+            $flags = '/imap/tls/novalidate-cert';
+        }
         imap_deletemailbox($this->connection, imap_utf7_encode("{{$this->host}:{$this->port}{$flags}}{$name}"));
         $this->disconnect();
     }
@@ -320,7 +340,12 @@ class ImapService
     public function appendMessage(string $folder, string $messageString, string $flags = ''): bool
     {
         $this->connect();
-        $connFlags = $this->encryption === 'ssl' ? '/imap/ssl/novalidate-cert' : '/imap/notls';
+        $connFlags = '/imap/notls';
+        if ($this->encryption === 'ssl') {
+            $connFlags = '/imap/ssl/novalidate-cert';
+        } elseif ($this->encryption === 'tls') {
+            $connFlags = '/imap/tls/novalidate-cert';
+        }
         $mailboxRef = "{{$this->host}:{$this->port}{$connFlags}}{$folder}";
         $result = imap_append($this->connection, $mailboxRef, $messageString, $flags);
         $this->disconnect();
