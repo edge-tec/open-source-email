@@ -62,10 +62,10 @@ services:
     container_name: edgemail-mailserver
     ports:
       - "2525:25"  # SMTP
-      - "143:143"  # IMAP
-      - "465:465"  # SMTPS
-      - "587:587"  # Submission
-      - "993:993"  # IMAPS
+      - "1143:143"  # IMAP
+      - "1465:465"  # SMTPS
+      - "1587:587"  # Submission
+      - "1993:993"  # IMAPS
     volumes:
       - mail-data:/var/mail
       - mail-state:/var/mail-state
