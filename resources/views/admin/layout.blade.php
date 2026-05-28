@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') - EdgeMail Admin</title>
-    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v={{ time() }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root{--bg:#f8fafc;--bg2:#ffffff;--bg3:#f1f5f9;--bg4:#e2e8f0;--border:#e2e8f0;--t1:#0f172a;--t2:#475569;--t3:#64748b;--accent:#4f46e5;--accent2:#6366f1;--glow:rgba(79,70,229,.2);--ok:#10b981;--err:#ef4444;--warn:#f59e0b;--info:#3b82f6}
