@@ -52,7 +52,7 @@
         </div>
         
         <div class="editor-container">
-            <div id="editor">{!! $mailbox->signature ? '<br><br>--<br>' . nl2br(e($mailbox->signature)) : '' !!}</div>
+            <div id="editor">{!! $replyTo['body'] ?? '' !!}{!! $mailbox->signature ? '<br><br>--<br>' . nl2br(e($mailbox->signature)) : '' !!}</div>
         </div>
     </form>
 </div>

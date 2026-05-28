@@ -12,7 +12,27 @@ class ComposeController extends Controller
     public function create(Request $request)
     {
         $mailbox = $this->getActiveMailbox();
-        $replyTo = $request->only(['to', 'subject', 'body', 'reply_uid']);
+        $replyTo = $request->only(['to', 'subject', 'body', 'reply_uid', 'forward_uid', 'folder']);
+
+        if ($request->has('reply_uid') || $request->has('forward_uid')) {
+            try {
+                $imap = new \App\Services\Mail\ImapService($mailbox);
+                $uid = $request->input('reply_uid') ?? $request->input('forward_uid');
+                $folder = $request->input('folder', 'INBOX');
+                $message = $imap->getMessage($uid, $folder);
+                
+                $date = date('M d, Y, h:i A', strtotime($message['date']));
+                $quoteHeader = $request->has('reply_uid') 
+                    ? "\n\nOn {$date}, {$message['from']} wrote:\n"
+                    : "\n\n---------- Forwarded message ---------\nFrom: {$message['from']}\nDate: {$date}\nSubject: {$message['subject']}\nTo: {$message['to']}\n\n";
+                
+                $originalBody = $message['body'] ?? '';
+                $replyTo['body'] = nl2br(htmlspecialchars($quoteHeader)) . "<blockquote style='border-left:2px solid #ccc;margin-left:10px;padding-left:10px'>" . $originalBody . "</blockquote>";
+            } catch (\Exception $e) {
+                // Ignore error and leave body empty
+            }
+        }
+
         return view('webmail.compose', compact('mailbox', 'replyTo'));
     }
 

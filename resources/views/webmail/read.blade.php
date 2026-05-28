@@ -31,18 +31,8 @@
         <a href="{{ url()->previous() }}" class="btn btn-secondary">← Back</a>
         
         <div class="read-actions">
-            <form method="POST" action="{{ route('webmail.message.reply', $message['uid']) }}">
-                @csrf
-                <input type="hidden" name="reply_to" value="{{ $message['from'] }}">
-                <input type="hidden" name="subject" value="{{ $message['subject'] }}">
-                <button class="btn btn-secondary">Reply</button>
-            </form>
-            <form method="POST" action="{{ route('webmail.message.forward', $message['uid']) }}">
-                @csrf
-                <input type="hidden" name="to" value="">
-                <input type="hidden" name="subject" value="{{ $message['subject'] }}">
-                <button class="btn btn-secondary">Forward</button>
-            </form>
+            <a href="{{ route('webmail.compose', ['reply_uid' => $message['uid'], 'folder' => $folder, 'to' => $message['from'], 'subject' => 'Re: ' . $message['subject']]) }}" class="btn btn-secondary">Reply</a>
+            <a href="{{ route('webmail.compose', ['forward_uid' => $message['uid'], 'folder' => $folder, 'subject' => 'Fwd: ' . $message['subject']]) }}" class="btn btn-secondary">Forward</a>
             
             <div style="width:1px;background:var(--border);margin:0 .5rem"></div>
             
