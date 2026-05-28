@@ -2,6 +2,9 @@
 @section('title', 'Login')
 
 @section('content')
+    <div style="text-align:center; margin-bottom:1.5rem">
+        <img src="{{ asset('images/logo.png') }}" alt="EdgeMail Logo" style="height:80px">
+    </div>
     <h2 class="card-title">Sign In to EdgeMail</h2>
     <p class="card-desc">Enter your credentials to access your email.</p>
 

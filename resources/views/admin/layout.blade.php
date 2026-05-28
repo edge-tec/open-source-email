@@ -74,7 +74,7 @@
     <aside class="sidebar">
         <div class="sidebar-brand">
             <div class="sidebar-brand-icon">✉️</div>
-            <h2>EdgeMail</h2>
+            <img src="{{ asset('images/logo.png') }}" alt="EdgeMail" style="height: 40px; margin: 0 auto; display: block;">
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">Overview</div>

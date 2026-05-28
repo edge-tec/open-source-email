@@ -60,7 +60,7 @@
     <aside class="sidebar">
         <div class="brand">
             <div class="brand-icon">E</div>
-            <div style="font-weight:700;font-size:1.1rem;letter-spacing:-0.5px">EdgeMail</div>
+            <img src="{{ asset('images/logo.png') }}" alt="EdgeMail" style="height: 36px;">
         </div>
         <div class="compose-btn-wrap">
             <a href="{{ route('webmail.compose') }}" class="btn-compose">✏️ Compose</a>

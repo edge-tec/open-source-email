@@ -331,8 +331,7 @@
 <body>
     <div class="installer-container">
         <div class="brand">
-            <div class="brand-icon">✉️</div>
-            <h1>EdgeMail</h1>
+            <img src="{{ asset('images/logo.png') }}" alt="EdgeMail" style="height: 60px; margin-bottom: 0.5rem;">
             <p>Open Source Email Server</p>
         </div>
 
