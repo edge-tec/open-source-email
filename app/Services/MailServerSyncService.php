@@ -16,6 +16,7 @@ class MailServerSyncService
     {
         $this->syncAccounts();
         $this->syncAliases();
+        $this->syncSieveScripts();
     }
 
     /**
@@ -63,5 +64,44 @@ class MailServerSyncService
 
         File::put($path, $content);
         Log::info("MailServerSyncService: Synced " . $aliases->count() . " aliases to postfix-virtual.cf");
+    }
+
+    /**
+     * Generate Sieve scripts for each mailbox.
+     */
+    public function syncSieveScripts(): void
+    {
+        $generator = new SieveScriptGenerator();
+        $mailboxes = Mailbox::with(['forwardingRules', 'autoresponder'])->where('status', 'active')->get();
+        
+        $synced = 0;
+        foreach ($mailboxes as $mailbox) {
+            $script = $generator->generate($mailbox);
+            if (empty(trim($script))) {
+                continue;
+            }
+
+            // Path to user's maildir: /var/vmail/domain/local_part/.dovecot.sieve
+            // Note: Maildir path format comes from MailServerConfigurator query
+            $domain = $mailbox->domain->domain ?? null;
+            if (!$domain) continue;
+
+            $dir = "/var/vmail/{$domain}/{$mailbox->local_part}";
+            if (!File::isDirectory($dir)) {
+                // The directory might not exist until the first email arrives, 
+                // but we can create the structure if we need to set the rule proactively.
+                @mkdir($dir, 0755, true);
+                @chown($dir, 5000);
+                @chgrp($dir, 5000);
+            }
+
+            $path = "{$dir}/.dovecot.sieve";
+            File::put($path, $script);
+            @chown($path, 5000);
+            @chgrp($path, 5000);
+            $synced++;
+        }
+
+        Log::info("MailServerSyncService: Synced Sieve scripts for {$synced} mailboxes.");
     }
 }

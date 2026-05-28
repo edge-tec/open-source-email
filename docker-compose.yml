@@ -9,6 +9,7 @@ services:
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
+      - mail-data:/var/vmail
     environment:
       - APP_ENV=local
       - APP_DEBUG=true

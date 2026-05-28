@@ -252,6 +252,10 @@ plugin {
 protocol imap {
     mail_plugins = \$mail_plugins quota imap_quota
 }
+
+protocol lmtp {
+    mail_plugins = \$mail_plugins sieve
+}
 CONF;
 
         $dovecotSql = <<<CONF

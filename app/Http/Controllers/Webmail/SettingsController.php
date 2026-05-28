@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Webmail;
 use App\Http\Controllers\Controller;
 use App\Models\Autoresponder;
 use App\Models\ForwardingRule;
+use App\Services\MailServerSyncService;
 use Illuminate\Http\Request;
 
 class SettingsController extends Controller
@@ -15,7 +16,7 @@ class SettingsController extends Controller
         return view('webmail.settings', compact('mailbox', 'autoresponder', 'forwarding', 'filters'));
     }
 
-    public function update(Request $request) {
+    public function update(Request $request, MailServerSyncService $syncService) {
         $mailbox = $this->getActiveMailbox();
         if (!$mailbox) return back()->withErrors(['No mailbox found.']);
 
@@ -53,10 +54,12 @@ class SettingsController extends Controller
             );
         }
 
+        $syncService->syncSieveScripts();
+
         return back()->with('success', 'Settings updated.');
     }
 
-    public function addFilter(Request $request) {
+    public function addFilter(Request $request, MailServerSyncService $syncService) {
         $request->validate([
             'name' => 'required|string|max:255',
             'criteria_field' => 'required|string',
@@ -69,16 +72,18 @@ class SettingsController extends Controller
         if (!$mailbox) return back()->withErrors(['No mailbox found.']);
 
         \App\Models\MailboxFilter::create(array_merge($request->all(), ['mailbox_id' => $mailbox->id]));
+        $syncService->syncSieveScripts();
 
         return back()->with('success', 'Filter added successfully.');
     }
 
-    public function destroyFilter($id) {
+    public function destroyFilter($id, MailServerSyncService $syncService) {
         $mailbox = $this->getActiveMailbox();
         if (!$mailbox) return back()->withErrors(['No mailbox found.']);
 
         $filter = \App\Models\MailboxFilter::where('mailbox_id', $mailbox->id)->findOrFail($id);
         $filter->delete();
+        $syncService->syncSieveScripts();
 
         return back()->with('success', 'Filter removed.');
     }
