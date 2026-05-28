@@ -33,7 +33,7 @@ class SmtpService
         ]);
         
         // Force mail manager to re-resolve the mailer with the new config
-        app('mail.manager')->forget('smtp');
+        app('mail.manager')->purge('smtp');
 
         Mail::raw($data['is_html'] ?? false ? '' : $data['body'], function (Message $message) use ($data, $to, $cc, $bcc) {
             $message->from($this->mailbox->email, $this->mailbox->name ?? $this->mailbox->local_part);
