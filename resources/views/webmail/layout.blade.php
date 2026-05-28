@@ -75,8 +75,16 @@
             @if(isset($folders))
                 @foreach($folders as $f)
                     @if(strtoupper($f) !== 'INBOX')
+                        @php
+                            $icon = '📁';
+                            $lower = strtolower($f);
+                            if ($lower === 'sent') $icon = '📤';
+                            elseif ($lower === 'drafts') $icon = '📝';
+                            elseif ($lower === 'junk') $icon = '🚫';
+                            elseif ($lower === 'trash') $icon = '🗑️';
+                        @endphp
                         <a href="{{ route('webmail.folder', urlencode($f)) }}" class="nav-link {{ isset($currentFolder) && $currentFolder === $f ? 'active' : '' }}">
-                            <span class="nav-link-icon">📁 {{ $f }}</span>
+                            <span class="nav-link-icon">{{ $icon }} {{ $f }}</span>
                         </a>
                     @endif
                 @endforeach
