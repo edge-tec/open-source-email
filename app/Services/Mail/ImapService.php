@@ -48,7 +48,12 @@ class ImapService
         $this->connect($folder);
 
         $info = imap_check($this->connection);
-        $total = $info->Nmsgs;
+        $total = $info->Nmsgs ?? 0;
+
+        if ($total === 0) {
+            $this->disconnect();
+            return collect();
+        }
 
         $start = max(1, $total - ($page * $perPage) + 1);
         $end = max(1, $total - (($page - 1) * $perPage));
@@ -60,7 +65,7 @@ class ImapService
 
         $messages = collect();
         $sequence = "{$start}:{$end}";
-        $overviews = imap_fetch_overview($this->connection, $sequence);
+        $overviews = @imap_fetch_overview($this->connection, $sequence);
 
         if ($overviews) {
             foreach (array_reverse($overviews) as $overview) {
@@ -207,7 +212,12 @@ class ImapService
         $added = false;
         foreach ($required as $req) {
             if (!in_array($req, $folders)) {
-                @imap_createmailbox($this->connection, imap_utf7_encode($ref . $req));
+                $status = @imap_createmailbox($this->connection, imap_utf7_encode($ref . $req));
+                if ($status) {
+                    @imap_subscribe($this->connection, imap_utf7_encode($ref . $req));
+                } else {
+                    \Illuminate\Support\Facades\Log::error("Failed to create folder $req. IMAP Errors: " . print_r(imap_errors(), true));
+                }
                 $folders[] = $req;
                 $added = true;
             }
