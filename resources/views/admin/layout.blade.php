@@ -74,7 +74,7 @@
 <body>
     <aside class="sidebar">
         <div class="sidebar-brand" style="justify-content: center;">
-            <img src="{{ asset('images/logo.png') }}" alt="EdgeMail" style="height: auto; max-width: 160px; max-height: 50px;">
+            <img src="{{ asset('images/logo.png') }}" alt="EdgeMail" style="height: 70px; width: auto; max-width: 200px; object-fit: contain;">
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">Overview</div>
