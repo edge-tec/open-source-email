@@ -40,13 +40,13 @@ class SmtpService
             $message->subject($data['subject']);
 
             foreach ($to as $recipient) {
-                $message->to($recipient);
+                $message->to($recipient['email'], $recipient['name']);
             }
             foreach ($cc as $recipient) {
-                $message->cc($recipient);
+                $message->cc($recipient['email'], $recipient['name']);
             }
             foreach ($bcc as $recipient) {
-                $message->bcc($recipient);
+                $message->bcc($recipient['email'], $recipient['name']);
             }
 
             if (!empty($data['is_html'])) {
@@ -71,6 +71,19 @@ class SmtpService
 
     protected function parseRecipients(string $recipients): array
     {
-        return array_map('trim', explode(',', $recipients));
+        $parsed = [];
+        $parts = array_map('trim', explode(',', $recipients));
+        foreach ($parts as $part) {
+            if (empty($part)) continue;
+            
+            if (preg_match('/^(.*?)\s*<([^>]+)>$/', $part, $matches)) {
+                $name = trim($matches[1], ' "');
+                $email = trim($matches[2]);
+                $parsed[] = ['email' => $email, 'name' => $name];
+            } else {
+                $parsed[] = ['email' => $part, 'name' => null];
+            }
+        }
+        return $parsed;
     }
 }

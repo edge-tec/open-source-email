@@ -51,9 +51,12 @@ class ComposeController extends Controller
             if ($request->input('action') === 'draft') {
                 $email = (new \Symfony\Component\Mime\Email())
                     ->from($mailbox->email)
-                    ->to($request->to)
                     ->subject($request->subject)
                     ->html($request->body);
+                
+                foreach ($this->parseRecipients($request->to) as $addr) {
+                    $email->addTo($addr);
+                }
                 
                 if ($request->hasFile('attachments')) {
                     foreach ($request->file('attachments') as $file) {
@@ -82,9 +85,12 @@ class ComposeController extends Controller
             try {
                 $email = (new \Symfony\Component\Mime\Email())
                     ->from($mailbox->email)
-                    ->to($request->to)
                     ->subject($request->subject)
                     ->html($request->body);
+                
+                foreach ($this->parseRecipients($request->to) as $addr) {
+                    $email->addTo($addr);
+                }
                 
                 if ($request->hasFile('attachments')) {
                     foreach ($request->file('attachments') as $file) {
@@ -120,5 +126,21 @@ class ComposeController extends Controller
         $request->validate(['file' => 'required|file|max:25600']); // 25MB
         $path = $request->file('file')->store('attachments', 'local');
         return response()->json(['path' => $path, 'name' => $request->file('file')->getClientOriginalName()]);
+    }
+
+    private function parseRecipients($recipients) {
+        $parsed = [];
+        $parts = array_map('trim', explode(',', $recipients));
+        foreach ($parts as $part) {
+            if (empty($part)) continue;
+            if (preg_match('/^(.*?)\s*<([^>]+)>$/', $part, $matches)) {
+                $name = trim($matches[1], ' "');
+                $email = trim($matches[2]);
+                $parsed[] = new \Symfony\Component\Mime\Address($email, $name);
+            } else {
+                $parsed[] = new \Symfony\Component\Mime\Address($part);
+            }
+        }
+        return $parsed;
     }
 }
