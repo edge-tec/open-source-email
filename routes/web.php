@@ -65,6 +65,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'two-factor
 
     // Mailbox Management
     Route::resource('mailboxes', MailboxController::class);
+    Route::get('mailboxes/{mailbox}/webmail', [MailboxController::class, 'webmailLogin'])->name('mailboxes.webmail');
 
     // Alias Management
     Route::resource('aliases', AliasController::class);

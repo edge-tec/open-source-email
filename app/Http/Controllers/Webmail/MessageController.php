@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 class MessageController extends Controller
 {
     public function show(Request $request, $uid) {
-        $mailbox = auth()->user()->mailboxes()->active()->first();
+        $mailbox = auth()->user()->getActiveMailbox();
         $folder = $request->query('folder', 'INBOX');
         try {
             $imap = new ImapService($mailbox);
@@ -29,7 +29,7 @@ class MessageController extends Controller
     }
 
     public function move(Request $request, $uid) {
-        $mailbox = auth()->user()->mailboxes()->active()->first();
+        $mailbox = auth()->user()->getActiveMailbox();
         $sourceFolder = $request->input('source_folder', 'INBOX');
         try {
             $imap = new ImapService($mailbox);
@@ -39,7 +39,7 @@ class MessageController extends Controller
     }
 
     public function toggleRead(Request $request, $uid) {
-        $mailbox = auth()->user()->mailboxes()->active()->first();
+        $mailbox = auth()->user()->getActiveMailbox();
         $folder = $request->input('source_folder', 'INBOX');
         try {
             $imap = new ImapService($mailbox);
@@ -49,7 +49,7 @@ class MessageController extends Controller
     }
 
     public function destroy(Request $request, $uid) {
-        $mailbox = auth()->user()->mailboxes()->active()->first();
+        $mailbox = auth()->user()->getActiveMailbox();
         $folder = $request->input('source_folder', 'INBOX');
         try {
             $imap = new ImapService($mailbox);

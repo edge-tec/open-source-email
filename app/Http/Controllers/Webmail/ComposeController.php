@@ -11,7 +11,7 @@ class ComposeController extends Controller
 {
     public function create(Request $request)
     {
-        $mailbox = auth()->user()->mailboxes()->active()->first();
+        $mailbox = auth()->user()->getActiveMailbox();
         $replyTo = $request->only(['to', 'subject', 'body', 'reply_uid']);
         return view('webmail.compose', compact('mailbox', 'replyTo'));
     }
@@ -24,7 +24,7 @@ class ComposeController extends Controller
             'body' => 'required|string',
         ]);
 
-        $mailbox = auth()->user()->mailboxes()->active()->first();
+        $mailbox = auth()->user()->getActiveMailbox();
         if (!$mailbox) return back()->withErrors(['No active mailbox found.']);
 
         try {

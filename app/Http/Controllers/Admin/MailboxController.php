@@ -86,4 +86,10 @@ class MailboxController extends Controller
         $mailbox->delete();
         return redirect()->route('admin.mailboxes.index')->with('success', 'Mailbox deleted.');
     }
+
+    public function webmailLogin(Mailbox $mailbox)
+    {
+        session(['active_mailbox_id' => $mailbox->id]);
+        return redirect()->route('webmail.inbox');
+    }
 }

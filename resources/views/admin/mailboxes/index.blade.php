@@ -29,7 +29,10 @@
                         <div style="width:100%;background:var(--border);height:4px;border-radius:2px"><div style="width:{{ min(100, $mb->getQuotaPercentage()) }}%;background:{{ $mb->getQuotaPercentage() > 90 ? 'var(--err)' : 'var(--accent)' }};height:100%;border-radius:2px"></div></div>
                     </td>
                     <td><span class="badge {{ $mb->status === 'active' ? 'badge-ok' : 'badge-warn' }}">{{ $mb->status }}</span></td>
-                    <td><a href="{{ route('admin.mailboxes.edit', $mb) }}" class="btn btn-secondary btn-sm">Edit</a></td>
+                    <td>
+                        <a href="{{ route('admin.mailboxes.webmail', $mb) }}" class="btn btn-primary btn-sm" target="_blank">Webmail</a>
+                        <a href="{{ route('admin.mailboxes.edit', $mb) }}" class="btn btn-secondary btn-sm">Edit</a>
+                    </td>
                 </tr>
             @empty
                 <tr><td colspan="6" style="text-align:center;color:var(--t3);padding:2rem">No mailboxes yet.</td></tr>

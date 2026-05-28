@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class SettingsController extends Controller
 {
     public function index() {
-        $mailbox = auth()->user()->mailboxes()->active()->first();
+        $mailbox = auth()->user()->getActiveMailbox();
         $autoresponder = $mailbox ? $mailbox->autoresponder : null;
         $forwarding = $mailbox ? $mailbox->forwardingRules : collect();
         $filters = $mailbox ? \App\Models\MailboxFilter::where('mailbox_id', $mailbox->id)->get() : collect();
@@ -16,7 +16,7 @@ class SettingsController extends Controller
     }
 
     public function update(Request $request) {
-        $mailbox = auth()->user()->mailboxes()->active()->first();
+        $mailbox = auth()->user()->getActiveMailbox();
         if (!$mailbox) return back()->withErrors(['No mailbox found.']);
 
         // Update signature and display name
@@ -65,7 +65,7 @@ class SettingsController extends Controller
             'action' => 'required|string',
         ]);
         
-        $mailbox = auth()->user()->mailboxes()->active()->first();
+        $mailbox = auth()->user()->getActiveMailbox();
         if (!$mailbox) return back()->withErrors(['No mailbox found.']);
 
         \App\Models\MailboxFilter::create(array_merge($request->all(), ['mailbox_id' => $mailbox->id]));
@@ -74,7 +74,7 @@ class SettingsController extends Controller
     }
 
     public function destroyFilter($id) {
-        $mailbox = auth()->user()->mailboxes()->active()->first();
+        $mailbox = auth()->user()->getActiveMailbox();
         if (!$mailbox) return back()->withErrors(['No mailbox found.']);
 
         $filter = \App\Models\MailboxFilter::where('mailbox_id', $mailbox->id)->findOrFail($id);
