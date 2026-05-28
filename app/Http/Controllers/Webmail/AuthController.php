@@ -57,7 +57,7 @@ class AuthController extends Controller
             'ip_address' => $request->ip(),
             'email' => $request->email,
             'user_agent' => $request->userAgent(),
-            'service' => 'webmail',
+            'service' => 'web',
         ]);
 
         // Check ban threshold
