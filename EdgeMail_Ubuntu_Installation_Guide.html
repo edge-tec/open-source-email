@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EdgeMail - Complete Ubuntu Installation Guide</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 2rem; }
+        h1 { border-bottom: 2px solid #eaecef; padding-bottom: .3em; color: #24292e; }
+        h2 { border-bottom: 1px solid #eaecef; padding-bottom: .3em; margin-top: 1.5em; color: #24292e; }
+        code { font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace; background-color: #f6f8fa; padding: .2em .4em; border-radius: 3px; font-size: 85%; }
+        pre { background-color: #f6f8fa; padding: 16px; overflow: auto; border-radius: 6px; }
+        pre code { background-color: transparent; padding: 0; font-size: 14px; }
+        .alert { padding: 15px; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; border-radius: 4px; margin: 15px 0; }
+    </style>
+</head>
+<body>
+
+    <h1>EdgeMail - Complete Ubuntu Installation Guide</h1>
+    <p>This guide will walk you through the process of installing and configuring the EdgeMail system on an Ubuntu Server using Docker.</p>
+
+    <div class="alert">
+        <strong>Prerequisites:</strong>
+        <ul>
+            <li><strong>Operating System:</strong> Ubuntu 20.04 or 22.04 LTS</li>
+            <li><strong>User Permissions:</strong> <code>root</code> access or a user with <code>sudo</code> privileges.</li>
+            <li><strong>Domain Name:</strong> A registered domain name pointing to your server's IP address.</li>
+        </ul>
+    </div>
+
+    <h2>Step 1: Update System & Install Docker</h2>
+    <p>First, ensure your server is up to date and install Docker and Docker Compose.</p>
+    <pre><code># Update package list and upgrade system
+sudo apt update && sudo apt upgrade -y
+
+# Install Docker
+sudo apt install docker.io -y
+
+# Install Docker Compose
+sudo apt install docker-compose -y
+
+# Start and enable Docker service
+sudo systemctl start docker
+sudo systemctl enable docker</code></pre>
+
+    <h2>Step 2: Download the Project</h2>
+    <p>Navigate to your web directory and clone the project from GitHub.</p>
+    <pre><code># Create directory if it doesn't exist
+sudo mkdir -p /www/wwwroot
+cd /www/wwwroot
+
+# Clone the repository (Replace with your actual repo URL)
+sudo git clone https://github.com/edge-tec/open-source-email.git
+
+# Go into the project directory
+cd open-source-email</code></pre>
+
+    <h2>Step 3: Start the Docker Containers</h2>
+    <p>EdgeMail is fully containerized. Start the containers using Docker Compose.</p>
+    <pre><code># Start all containers in the background
+sudo docker-compose up -d</code></pre>
+
+    <h2>Step 4: Install PHP Dependencies</h2>
+    <p>Install the required PHP packages using Composer inside the application container.</p>
+    <pre><code>sudo docker-compose exec app composer install --optimize-autoloader --no-dev</code></pre>
+
+    <h2>Step 5: Configure Environment Variables</h2>
+    <p>Set up the configuration file and generate the application key.</p>
+    <pre><code># Copy the example environment file
+sudo cp .env.example .env
+
+# Generate a unique application key
+sudo docker-compose exec app php artisan key:generate</code></pre>
+
+    <h2>Step 6: Setup the Database</h2>
+    <p>Run the database migrations and seed the initial data.</p>
+    <pre><code># Run migrations (Type 'yes' if prompted)
+sudo docker-compose exec app php artisan migrate --force
+
+# Seed database with initial settings
+sudo docker-compose exec app php artisan db:seed --force</code></pre>
+
+    <h2>Step 7: Create the Super Admin Account</h2>
+    <p>Create your admin account so you can log into the EdgeMail dashboard.</p>
+    <pre><code>sudo docker-compose exec app php artisan make:admin</code></pre>
+
+    <h2>Step 8: Finalizing & Permissions</h2>
+    <p>Clear caches and ensure everything is optimized for production.</p>
+    <pre><code>sudo docker-compose exec app php artisan optimize:clear
+sudo docker-compose exec app php artisan view:clear
+sudo docker-compose exec app php artisan config:cache</code></pre>
+
+    <h2>Step 9: Accessing EdgeMail</h2>
+    <p>Your EdgeMail installation is now complete!</p>
+    <ol>
+        <li>Open your web browser.</li>
+        <li>Go to: <strong><code>http://your-server-ip:8080</code></strong></li>
+        <li>Log in using the Admin credentials you created in Step 7.</li>
+    </ol>
+
+    <hr>
+    <p><strong>Troubleshooting:</strong></p>
+    <ul>
+        <li><strong>Permission Denied (Docker):</strong> Always use <code>sudo</code> before your Docker commands.</li>
+        <li><strong>500 Server Error:</strong> Check your <code>.env</code> file for correct database credentials and ensure <code>APP_KEY</code> is generated.</li>
+    </ul>
+
+</body>
+</html>
