@@ -93,8 +93,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'two-factor
     Route::post('security/ssl/custom', [SecurityController::class, 'installCustomSsl'])->name('security.ssl.custom');
 });
 
+// Webmail Auth Routes
+Route::prefix('webmail')->name('webmail.')->group(function () {
+    Route::get('/login', [\App\Http\Controllers\Webmail\AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [\App\Http\Controllers\Webmail\AuthController::class, 'login'])->name('login.attempt');
+    Route::post('/logout', [\App\Http\Controllers\Webmail\AuthController::class, 'logout'])->name('logout');
+});
+
 // Webmail
-Route::prefix('webmail')->name('webmail.')->middleware(['auth', 'two-factor'])->group(function () {
+Route::prefix('webmail')->name('webmail.')->middleware(['webmail.auth'])->group(function () {
     Route::get('/', [InboxController::class, 'index'])->name('inbox');
     Route::get('/folder/{folder}', [InboxController::class, 'folder'])->name('folder');
     Route::get('/search', [InboxController::class, 'search'])->name('search');

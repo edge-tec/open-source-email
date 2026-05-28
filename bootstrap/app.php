@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'installed' => \App\Http\Middleware\InstalledMiddleware::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'two-factor' => \App\Http\Middleware\TwoFactorMiddleware::class,
+            'webmail.auth' => \App\Http\Middleware\WebmailAuth::class,
         ]);
 
         $middleware->web(append: [

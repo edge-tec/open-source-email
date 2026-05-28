@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 class FolderController extends Controller
 {
     public function index() {
-        $mailbox = auth()->user()->getActiveMailbox();
+        $mailbox = $this->getActiveMailbox();
         try {
             $imap = new ImapService($mailbox);
             $folders = $imap->getFolders();
@@ -17,7 +17,7 @@ class FolderController extends Controller
 
     public function store(Request $request) {
         $request->validate(['name' => 'required|string|max:100']);
-        $mailbox = auth()->user()->getActiveMailbox();
+        $mailbox = $this->getActiveMailbox();
         try {
             $imap = new ImapService($mailbox);
             $imap->createFolder($request->name);
@@ -28,7 +28,7 @@ class FolderController extends Controller
     }
 
     public function destroy($folder) {
-        $mailbox = auth()->user()->getActiveMailbox();
+        $mailbox = $this->getActiveMailbox();
         try {
             $imap = new ImapService($mailbox);
             $imap->deleteFolder($folder);

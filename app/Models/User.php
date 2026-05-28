@@ -50,15 +50,4 @@ class User extends Authenticatable
         if ($this->isSuperAdmin()) return true;
         return $domain->user_id === $this->id;
     }
-
-    public function getActiveMailbox()
-    {
-        if (session()->has('active_mailbox_id')) {
-            $mailbox = Mailbox::where('id', session('active_mailbox_id'))->active()->first();
-            if ($mailbox && ($this->isAdmin() || $mailbox->user_id === $this->id)) {
-                return $mailbox;
-            }
-        }
-        return $this->mailboxes()->active()->first();
-    }
 }

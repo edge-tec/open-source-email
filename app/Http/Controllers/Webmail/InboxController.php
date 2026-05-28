@@ -10,7 +10,7 @@ class InboxController extends Controller
 {
     public function index(Request $request)
     {
-        $mailbox = auth()->user()->getActiveMailbox();
+        $mailbox = $this->getActiveMailbox();
         if (!$mailbox) {
             return view('webmail.no-mailbox');
         }
@@ -41,7 +41,7 @@ class InboxController extends Controller
 
     public function folder(Request $request, string $folder)
     {
-        $mailbox = auth()->user()->getActiveMailbox();
+        $mailbox = $this->getActiveMailbox();
         if (!$mailbox) return redirect()->route('webmail.inbox');
 
         try {
@@ -71,7 +71,7 @@ class InboxController extends Controller
 
     public function search(Request $request)
     {
-        $mailbox = auth()->user()->getActiveMailbox();
+        $mailbox = $this->getActiveMailbox();
         if (!$mailbox) return redirect()->route('webmail.inbox');
 
         $searchQuery = trim((string) $request->q);
@@ -93,7 +93,7 @@ class InboxController extends Controller
 
     public function bulk(Request $request)
     {
-        $mailbox = auth()->user()->getActiveMailbox();
+        $mailbox = $this->getActiveMailbox();
         if (!$mailbox) return back();
 
         $action = $request->action;
@@ -126,7 +126,7 @@ class InboxController extends Controller
 
     public function emptyTrash(Request $request)
     {
-        $mailbox = auth()->user()->getActiveMailbox();
+        $mailbox = $this->getActiveMailbox();
         if (!$mailbox) return back();
 
         try {
