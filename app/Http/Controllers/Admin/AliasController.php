@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Alias;
 use App\Models\Domain;
+use App\Services\MailServerSyncService;
 use Illuminate\Http\Request;
 
 class AliasController extends Controller
@@ -32,6 +33,7 @@ class AliasController extends Controller
         ]);
 
         Alias::create($request->only(['domain_id', 'source', 'destination', 'status', 'is_catchall', 'comment']));
+        app(MailServerSyncService::class)->syncAliases();
         return redirect()->route('admin.aliases.index')->with('success', 'Alias created.');
     }
 
@@ -44,12 +46,14 @@ class AliasController extends Controller
     public function update(Request $request, Alias $alias)
     {
         $alias->update($request->only(['source', 'destination', 'status', 'is_catchall', 'comment']));
+        app(MailServerSyncService::class)->syncAliases();
         return redirect()->route('admin.aliases.index')->with('success', 'Alias updated.');
     }
 
     public function destroy(Alias $alias)
     {
         $alias->delete();
+        app(MailServerSyncService::class)->syncAliases();
         return redirect()->route('admin.aliases.index')->with('success', 'Alias deleted.');
     }
 }

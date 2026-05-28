@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Mailbox;
 use App\Models\Domain;
+use App\Services\MailServerSyncService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -62,6 +63,8 @@ class MailboxController extends Controller
             'maildir' => $domain->domain . '/' . strtolower($request->local_part) . '/Maildir/',
         ]);
 
+        app(MailServerSyncService::class)->syncAccounts();
+
         return redirect()->route('admin.mailboxes.index')->with('success', 'Mailbox created.');
     }
 
@@ -75,15 +78,19 @@ class MailboxController extends Controller
     {
         $data = $request->only(['name', 'quota', 'status', 'signature', 'is_catchall', 'send_only']);
         if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
+            $mailbox->password = Hash::make($request->password);
         }
+
         $mailbox->update($data);
+
+        app(MailServerSyncService::class)->syncAccounts();
         return redirect()->route('admin.mailboxes.index')->with('success', 'Mailbox updated.');
     }
 
     public function destroy(Mailbox $mailbox)
     {
         $mailbox->delete();
+        app(MailServerSyncService::class)->syncAccounts();
         return redirect()->route('admin.mailboxes.index')->with('success', 'Mailbox deleted.');
     }
 
