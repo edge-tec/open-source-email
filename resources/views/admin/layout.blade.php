@@ -36,6 +36,14 @@
         .hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:.5rem;border-radius:8px;color:var(--t1);font-size:1.4rem;line-height:1;flex-shrink:0;transition:background .15s}
         .hamburger-btn:hover{background:var(--bg3)}
 
+        /* Mobile Nav (Visible only on small screens) */
+        .mobile-nav{display:none;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1rem;gap:1.5rem}
+        .mobile-nav::-webkit-scrollbar{display:none} /* Hide scrollbar for clean look */
+        .mobile-nav-link{display:inline-block;text-decoration:none;color:var(--t2);font-size:.85rem;font-weight:600;padding:.75rem 0;position:relative;transition:color .15s}
+        .mobile-nav-link:hover{color:var(--t1)}
+        .mobile-nav-link.active{color:var(--accent)}
+        .mobile-nav-link.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent);border-radius:2px 2px 0 0}
+
         /* Main content */
         .main{flex:1;margin-left:var(--sidebar-w);min-height:100vh}
         .topbar{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--bg2);gap:.75rem}
@@ -87,6 +95,7 @@
         /* ===== RESPONSIVE: Mobile (≤768px) ===== */
         @media(max-width:768px){
             .hamburger-btn{display:flex;align-items:center;justify-content:center}
+            .mobile-nav{display:flex} /* Show mobile nav */
             .sidebar{transform:translateX(-100%);box-shadow:4px 0 24px rgba(0,0,0,.15)}
             .sidebar.open{transform:translateX(0)}
             .sidebar-close-btn{display:block}
@@ -169,6 +178,22 @@
             </div>
             <div>@yield('actions')</div>
         </div>
+        
+        <!-- Mobile Horizontal Navigation -->
+        <nav class="mobile-nav">
+            <a href="{{ route('admin.dashboard') }}" class="mobile-nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a>
+            <a href="{{ route('admin.domains.index') }}" class="mobile-nav-link {{ request()->routeIs('admin.domains.*') ? 'active' : '' }}">Domains</a>
+            <a href="{{ route('admin.users.index') }}" class="mobile-nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">Users</a>
+            <a href="{{ route('admin.mailboxes.index') }}" class="mobile-nav-link {{ request()->routeIs('admin.mailboxes.*') ? 'active' : '' }}">Mailboxes</a>
+            <a href="{{ route('admin.aliases.index') }}" class="mobile-nav-link {{ request()->routeIs('admin.aliases.*') ? 'active' : '' }}">Aliases</a>
+            <a href="{{ route('admin.logs.index') }}" class="mobile-nav-link {{ request()->routeIs('admin.logs.*') ? 'active' : '' }}">SMTP Logs</a>
+            <a href="{{ route('admin.queue.index') }}" class="mobile-nav-link {{ request()->routeIs('admin.queue.*') ? 'active' : '' }}">Queue</a>
+            <a href="{{ route('admin.spam.index') }}" class="mobile-nav-link {{ request()->routeIs('admin.spam.*') ? 'active' : '' }}">Spam</a>
+            <a href="{{ route('admin.storage.index') }}" class="mobile-nav-link {{ request()->routeIs('admin.storage.*') ? 'active' : '' }}">Storage</a>
+            <a href="{{ route('admin.security.index') }}" class="mobile-nav-link {{ request()->routeIs('admin.security.*') ? 'active' : '' }}">Security</a>
+            <a href="{{ route('webmail.inbox') }}" class="mobile-nav-link">Webmail</a>
+        </nav>
+
         <div class="content">
             @if(session('success'))
                 <div class="alert alert-success">✓ {{ session('success') }}</div>
