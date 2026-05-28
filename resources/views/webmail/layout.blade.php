@@ -59,9 +59,8 @@
 <body>
     @if(isset($mailbox))
     <aside class="sidebar">
-        <div class="brand">
-            <div class="brand-icon">E</div>
-            <img src="{{ asset('images/logo.png') }}" alt="EdgeMail" style="height: 36px;">
+        <div class="brand" style="justify-content: center;">
+            <img src="{{ asset('images/logo.png') }}" alt="EdgeMail" style="height: auto; max-width: 160px; max-height: 50px;">
         </div>
         <div class="compose-btn-wrap">
             <a href="{{ route('webmail.compose') }}" class="btn-compose">✏️ Compose</a>
