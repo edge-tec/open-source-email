@@ -4,7 +4,7 @@
 @section('styles')
 <style>
     .mail-list{height:100%;overflow-y:auto;background:var(--bg2)}
-    .mail-item{display:grid;grid-template-columns:40px 200px 1fr 100px;align-items:center;padding:.75rem 1.5rem;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;color:var(--t1);transition:background .15s}
+    .mail-item{display:grid;grid-template-columns:65px 200px 1fr 100px;align-items:center;padding:.75rem 1.5rem;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;color:var(--t1);transition:background .15s}
     .mail-item:hover{background:var(--bg-hover)}
     .mail-item.unread{font-weight:600;background:var(--bg)}
     .mail-item.unread:hover{background:var(--bg-hover)}
