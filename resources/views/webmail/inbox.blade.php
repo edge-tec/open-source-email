@@ -72,6 +72,9 @@
                 @endif
             </div>
             <div class="toolbar" style="align-items:center">
+                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;margin-right:0.5rem;" title="Select All">
+                    <input type="checkbox" id="selectAllCheckbox" style="accent-color:var(--accent);width:16px;height:16px;cursor:pointer" onchange="toggleAllEmails(this.checked)">
+                </label>
                 <input type="text" name="q" form="searchForm" class="form-control" style="padding:.4rem;width:200px" placeholder="Search emails..." value="{{ $searchQuery ?? '' }}" onkeydown="if(event.key === 'Enter') { event.preventDefault(); document.getElementById('searchForm').submit(); }">
                 <button type="submit" form="searchForm" class="btn btn-secondary" style="padding:.4rem .75rem">Search</button>
 
@@ -191,8 +194,20 @@
             cb.addEventListener('change', () => {
                 const anyChecked = document.querySelectorAll('.mail-checkbox:checked').length > 0;
                 document.getElementById('bulkActions').style.display = anyChecked ? 'inline-block' : 'none';
+                
+                // Update 'Select All' checkbox state
+                const allChecked = document.querySelectorAll('.mail-checkbox:checked').length === document.querySelectorAll('.mail-checkbox').length;
+                document.getElementById('selectAllCheckbox').checked = allChecked;
             });
         });
+
+        function toggleAllEmails(checked) {
+            document.querySelectorAll('.mail-checkbox').forEach(cb => {
+                cb.checked = checked;
+            });
+            const anyChecked = document.querySelectorAll('.mail-checkbox:checked').length > 0;
+            document.getElementById('bulkActions').style.display = anyChecked ? 'inline-block' : 'none';
+        }
 
         // Quick Filter Logic
         function openFilterModal(from, subject) {
