@@ -34,6 +34,7 @@ class InboxController extends Controller
             $messages = collect();
             $folders = [];
             $unread = 0;
+            request()->session()->flash('error', 'IMAP Connection Failed: ' . $e->getMessage());
         }
 
         return view('webmail.inbox', compact('mailbox', 'messages', 'folders', 'unread'));
@@ -63,6 +64,7 @@ class InboxController extends Controller
             $messages = collect();
             $folders = [];
             $unread = 0;
+            request()->session()->flash('error', 'IMAP Connection Failed: ' . $e->getMessage());
         }
 
         $currentFolder = $folder;

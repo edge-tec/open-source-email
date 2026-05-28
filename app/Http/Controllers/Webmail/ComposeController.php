@@ -58,6 +58,25 @@ class ComposeController extends Controller
                 'attachments' => $request->file('attachments', []),
             ]);
 
+            // Append to Sent folder
+            try {
+                $email = (new \Symfony\Component\Mime\Email())
+                    ->from($mailbox->email)
+                    ->to($request->to)
+                    ->subject($request->subject)
+                    ->html($request->body);
+                
+                if ($request->hasFile('attachments')) {
+                    foreach ($request->file('attachments') as $file) {
+                        $email->attachFromPath($file->getRealPath(), $file->getClientOriginalName(), $file->getClientMimeType());
+                    }
+                }
+                $imap = new \App\Services\Mail\ImapService($mailbox);
+                $imap->appendMessage('Sent', $email->toString(), '\\Seen');
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Failed to append to Sent folder: " . $e->getMessage());
+            }
+
             // Log the sent email
             EmailLog::create([
                 'mailbox_id' => $mailbox->id,
