@@ -22,7 +22,7 @@
 
     /* ===== RESPONSIVE: Tablet ===== */
     @media(max-width:1024px){
-        .mail-item{grid-template-columns:50px 160px 1fr 80px;padding:.75rem 1rem}
+        .mail-item{grid-template-columns:65px 160px 1fr 80px;padding:.75rem 1rem}
     }
 
     /* ===== RESPONSIVE: Mobile ===== */
@@ -30,7 +30,7 @@
         .list-header{flex-direction:column;gap:.75rem;align-items:stretch;padding:1rem}
         .toolbar{flex-wrap:wrap;justify-content:flex-end}
         .toolbar .form-control{width:100% !important;min-width:0}
-        .mail-item{grid-template-columns:40px 1fr auto;padding:.75rem 1rem;gap:.25rem}
+        .mail-item{grid-template-columns:65px 1fr auto;padding:.75rem 1rem;gap:.25rem}
         .mail-sender{padding-right:.5rem;font-size:.85rem}
         .mail-subject{grid-column:2/3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem;margin-top:2px}
         .mail-date{font-size:.7rem;grid-row:1;grid-column:3}
@@ -40,7 +40,7 @@
     @media(max-width:480px){
         .list-header{padding:.75rem}
         .list-title{font-size:.95rem}
-        .mail-item{padding:.6rem .75rem}
+        .mail-item{grid-template-columns:55px 1fr auto;padding:.6rem .75rem}
         .mail-avatar{width:24px;height:24px;font-size:.6rem}
         .mail-sender{font-size:.8rem}
         .mail-subject{font-size:.78rem}
