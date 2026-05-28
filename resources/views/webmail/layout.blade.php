@@ -48,6 +48,7 @@
         .btn{padding:.5rem 1rem;border-radius:6px;font-size:.85rem;font-weight:500;border:none;cursor:pointer;text-decoration:none;font-family:inherit}
         .btn-primary{background:var(--accent);color:white}.btn-primary:hover{background:var(--accent2)}
         .btn-secondary{background:var(--bg);border:1px solid var(--border);color:var(--t1)}.btn-secondary:hover{background:var(--bg-hover)}
+        .btn-logout{background:#fee2e2;color:#ef4444;border:1px solid #fca5a5;transition:all 0.2s}.btn-logout:hover{background:#fecaca}
         .btn-icon{background:transparent;border:none;color:var(--t2);cursor:pointer;padding:.5rem;border-radius:6px}.btn-icon:hover{background:var(--bg-hover);color:var(--t1)}
         
         .alert{padding:.75rem 1rem;border-radius:8px;font-size:.85rem;margin-bottom:1rem;background:var(--bg2);border:1px solid var(--border)}
@@ -153,7 +154,7 @@
                 <span class="user-email">{{ $mailbox->email }}</span>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="btn btn-secondary" style="padding:.4rem .75rem;font-size:.8rem">Logout</button>
+                    <button type="submit" class="btn btn-logout" style="padding:.4rem .75rem;font-size:.8rem">Logout</button>
                 </form>
             </div>
         </header>
