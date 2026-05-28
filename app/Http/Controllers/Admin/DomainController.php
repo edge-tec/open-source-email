@@ -139,4 +139,69 @@ class DomainController extends Controller
 
         return back()->with('success', 'SSL certificate for ' . $domain->domain . ' installed successfully.');
     }
+
+    public function verifyDns(Domain $domain)
+    {
+        $status = [
+            'mx' => false,
+            'spf' => false,
+            'dmarc' => false,
+            'dkim' => false,
+        ];
+
+        // 1. Check MX
+        $mxRecords = @dns_get_record($domain->domain, DNS_MX);
+        if ($mxRecords) {
+            $expectedHost = config('edgemail.hostname');
+            foreach ($mxRecords as $record) {
+                if (isset($record['target']) && str_ends_with(strtolower($record['target']), strtolower($expectedHost))) {
+                    $status['mx'] = true;
+                    break;
+                }
+            }
+        }
+
+        // 2. Check SPF (TXT on root domain)
+        $txtRecords = @dns_get_record($domain->domain, DNS_TXT);
+        if ($txtRecords) {
+            foreach ($txtRecords as $record) {
+                $txt = $record['txt'] ?? ($record['entries'][0] ?? '');
+                if (str_starts_with(strtolower($txt), 'v=spf1')) {
+                    $status['spf'] = true;
+                    break;
+                }
+            }
+        }
+
+        // 3. Check DMARC
+        $dmarcRecords = @dns_get_record("_dmarc.{$domain->domain}", DNS_TXT);
+        if ($dmarcRecords) {
+            foreach ($dmarcRecords as $record) {
+                $txt = $record['txt'] ?? ($record['entries'][0] ?? '');
+                if (str_starts_with(strtolower($txt), 'v=dmarc1')) {
+                    $status['dmarc'] = true;
+                    break;
+                }
+            }
+        }
+
+        // 4. Check DKIM
+        if ($domain->dkim_enabled && $domain->dkim_selector) {
+            $dkimRecords = @dns_get_record("{$domain->dkim_selector}._domainkey.{$domain->domain}", DNS_TXT);
+            if ($dkimRecords) {
+                foreach ($dkimRecords as $record) {
+                    $txt = $record['txt'] ?? ($record['entries'][0] ?? '');
+                    if (str_starts_with(strtolower($txt), 'v=dkim1')) {
+                        $status['dkim'] = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'status' => $status
+        ]);
+    }
 }

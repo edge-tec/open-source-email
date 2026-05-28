@@ -58,6 +58,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'two-factor
 
     // Domain Management
     Route::resource('domains', DomainController::class);
+    Route::get('domains/{domain}/verify-dns', [DomainController::class, 'verifyDns'])->name('domains.verify-dns');
     Route::post('domains/{domain}/generate-dkim', [DomainController::class, 'generateDkim'])->name('domains.generate-dkim');
     Route::post('domains/{domain}/ssl', [DomainController::class, 'installSsl'])->name('domains.ssl');
 
