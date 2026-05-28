@@ -10,7 +10,7 @@
     .read-subject{font-size:1.4rem;font-weight:700;margin-bottom:1rem;color:var(--t1)}
     .read-meta{display:flex;justify-content:space-between;align-items:center}
     .sender-info{display:flex;align-items:center;gap:1rem}
-    .sender-avatar{width:40px;height:40px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:bold}
+    .sender-avatar{width:40px;height:40px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:bold;flex-shrink:0;}
     .sender-name{font-weight:600;color:var(--t1);font-size:.95rem}
     .sender-email{font-size:.8rem;color:var(--t3)}
     .read-date{font-size:.8rem;color:var(--t2)}

@@ -12,7 +12,7 @@
     .mail-subject{font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t2)}
     .mail-item.unread .mail-subject{color:var(--t1)}
     .mail-date{font-size:.75rem;color:var(--t3);text-align:right}
-    .mail-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:bold}
+    .mail-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:bold;flex-shrink:0;}
     .list-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--bg2)}
     .list-title{font-size:1.1rem;font-weight:600}
     
