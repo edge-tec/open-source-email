@@ -75,9 +75,20 @@
         @endif
         
         <div class="compose-fields">
-            <div class="field-row">
+            <div class="field-row" style="position:relative">
                 <div class="field-label">To</div>
                 <input type="email" class="field-input" name="to" value="{{ $replyTo['to'] ?? '' }}" placeholder="recipient@example.com" required autofocus autocomplete="off">
+                <button type="button" class="btn-discard" style="padding:0.2rem 0.5rem;font-size:0.8rem;position:absolute;right:0" onclick="document.getElementById('cc-bcc-rows').style.display='block';this.style.display='none'">Cc/Bcc</button>
+            </div>
+            <div id="cc-bcc-rows" style="display:none">
+                <div class="field-row">
+                    <div class="field-label">Cc</div>
+                    <input type="text" class="field-input" name="cc" placeholder="cc@example.com" autocomplete="off">
+                </div>
+                <div class="field-row">
+                    <div class="field-label">Bcc</div>
+                    <input type="text" class="field-input" name="bcc" placeholder="bcc@example.com" autocomplete="off">
+                </div>
             </div>
             <div class="field-row">
                 <div class="field-label">Subject</div>

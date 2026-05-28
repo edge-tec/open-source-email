@@ -57,6 +57,16 @@ class ComposeController extends Controller
                 foreach ($this->parseRecipients($request->to) as $addr) {
                     $email->addTo($addr);
                 }
+                if ($request->cc) {
+                    foreach ($this->parseRecipients($request->cc) as $addr) {
+                        $email->addCc($addr);
+                    }
+                }
+                if ($request->bcc) {
+                    foreach ($this->parseRecipients($request->bcc) as $addr) {
+                        $email->addBcc($addr);
+                    }
+                }
                 
                 if ($request->hasFile('attachments')) {
                     foreach ($request->file('attachments') as $file) {
@@ -90,6 +100,16 @@ class ComposeController extends Controller
                 
                 foreach ($this->parseRecipients($request->to) as $addr) {
                     $email->addTo($addr);
+                }
+                if ($request->cc) {
+                    foreach ($this->parseRecipients($request->cc) as $addr) {
+                        $email->addCc($addr);
+                    }
+                }
+                if ($request->bcc) {
+                    foreach ($this->parseRecipients($request->bcc) as $addr) {
+                        $email->addBcc($addr);
+                    }
                 }
                 
                 if ($request->hasFile('attachments')) {
