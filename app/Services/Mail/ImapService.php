@@ -52,8 +52,8 @@ class ImapService
     {
         $this->connect($folder);
 
-        $info = imap_check($this->connection);
-        $total = $info->Nmsgs ?? 0;
+        $info = @imap_check($this->connection);
+        $total = $info ? $info->Nmsgs : 0;
 
         if ($total === 0) {
             $this->disconnect();

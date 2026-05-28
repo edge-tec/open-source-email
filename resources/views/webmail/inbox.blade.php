@@ -56,6 +56,9 @@
         @if(session('success'))
             <div style="padding:1rem 1.5rem 0"><div class="alert alert-success">{{ session('success') }}</div></div>
         @endif
+        @if(session('error'))
+            <div style="padding:1rem 1.5rem 0"><div class="alert alert-error">{{ session('error') }}</div></div>
+        @endif
         @if($errors->any())
             <div style="padding:1rem 1.5rem 0"><div class="alert alert-error">{{ $errors->first() }}</div></div>
         @endif
