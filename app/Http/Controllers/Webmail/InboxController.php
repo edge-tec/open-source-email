@@ -20,7 +20,7 @@ class InboxController extends Controller
             $messages = $imap->getMessages('INBOX', $request->integer('page', 1), 25);
             $folders = $imap->getFolders();
             
-            $defaults = ['Sent', 'Drafts', 'Trash', 'Junk'];
+            $defaults = ['Sent', 'Drafts', 'Trash', 'Junk', 'Promotions', 'Social', 'Updates'];
             $missing = array_diff($defaults, $folders);
             if (!empty($missing)) {
                 foreach ($missing as $f) {
@@ -50,7 +50,7 @@ class InboxController extends Controller
             $messages = $imap->getMessages($folder, $request->integer('page', 1), 25);
             $folders = $imap->getFolders();
             
-            $defaults = ['Sent', 'Drafts', 'Trash', 'Junk'];
+            $defaults = ['Sent', 'Drafts', 'Trash', 'Junk', 'Promotions', 'Social', 'Updates'];
             $missing = array_diff($defaults, $folders);
             if (!empty($missing)) {
                 foreach ($missing as $f) {

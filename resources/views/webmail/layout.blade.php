@@ -118,6 +118,9 @@
                             elseif ($lower === 'drafts') $icon = '📝';
                             elseif ($lower === 'junk') $icon = '🚫';
                             elseif ($lower === 'trash') $icon = '🗑️';
+                            elseif ($lower === 'promotions') $icon = '🏷️';
+                            elseif ($lower === 'social') $icon = '👥';
+                            elseif ($lower === 'updates' || $lower === 'update') $icon = '🔔';
                         @endphp
                         <a href="{{ route('webmail.folder', urlencode($f)) }}" class="nav-link {{ isset($currentFolder) && $currentFolder === $f ? 'active' : '' }}">
                             <span class="nav-link-icon">{{ $icon }} {{ $f }}</span>
