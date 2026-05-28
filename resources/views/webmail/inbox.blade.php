@@ -3,8 +3,8 @@
 
 @section('styles')
 <style>
-    .mail-list{height:100%;overflow-y:auto;background:var(--bg2)}
-    .mail-item{display:grid;grid-template-columns:65px 200px 1fr 100px;align-items:center;padding:.75rem 1.5rem;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;color:var(--t1);transition:background .15s}
+    .mail-list{height:100%;overflow-y:auto;background:var(--bg2);padding-bottom:2rem;}
+    .mail-item{display:grid;grid-template-columns:65px 200px 1fr 100px 40px;align-items:center;padding:.75rem 1.5rem;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;color:var(--t1);transition:background .15s}
     .mail-item:hover{background:var(--bg-hover)}
     .mail-item.unread{font-weight:600;background:var(--bg)}
     .mail-item.unread:hover{background:var(--bg-hover)}
@@ -13,6 +13,8 @@
     .mail-item.unread .mail-subject{color:var(--t1)}
     .mail-date{font-size:.75rem;color:var(--t3);text-align:right}
     .mail-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:bold;flex-shrink:0;}
+    .mail-action-btn{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--t3);transition:background .2s,color .2s;font-size:1.2rem;cursor:pointer;}
+    .mail-action-btn:hover{background:var(--bg3);color:var(--t1)}
     .list-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--bg2)}
     .list-title{font-size:1.1rem;font-weight:600}
     
@@ -20,9 +22,17 @@
     .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--t3)}
     .empty-icon{font-size:3rem;margin-bottom:1rem;opacity:.5}
 
+    /* Modal Styles */
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:1000}
+    .modal-overlay.active{display:flex}
+    .filter-modal{background:var(--bg2);padding:1.5rem;border-radius:12px;width:100%;max-width:500px;box-shadow:0 10px 25px -5px rgba(0,0,0,0.5)}
+    .modal-title{font-size:1.2rem;font-weight:600;margin-bottom:1rem}
+    .modal-close{float:right;cursor:pointer;font-size:1.2rem;color:var(--t3)}
+    .modal-close:hover{color:var(--t1)}
+
     /* ===== RESPONSIVE: Tablet ===== */
     @media(max-width:1024px){
-        .mail-item{grid-template-columns:65px 160px 1fr 80px;padding:.75rem 1rem}
+        .mail-item{grid-template-columns:65px 160px 1fr 80px 40px;padding:.75rem 1rem}
     }
 
     /* ===== RESPONSIVE: Mobile ===== */
@@ -30,7 +40,7 @@
         .list-header{flex-direction:column;gap:.75rem;align-items:stretch;padding:1rem}
         .toolbar{flex-wrap:wrap;justify-content:flex-end}
         .toolbar .form-control{width:100% !important;min-width:0}
-        .mail-item{grid-template-columns:65px 1fr auto;padding:.75rem 1rem;gap:.25rem}
+        .mail-item{grid-template-columns:65px 1fr auto 30px;padding:.75rem 1rem;gap:.25rem}
         .mail-sender{padding-right:.5rem;font-size:.85rem}
         .mail-subject{grid-column:2/3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem;margin-top:2px}
         .mail-date{font-size:.7rem;grid-row:1;grid-column:3}
@@ -40,10 +50,11 @@
     @media(max-width:480px){
         .list-header{padding:.75rem}
         .list-title{font-size:.95rem}
-        .mail-item{grid-template-columns:55px 1fr auto;padding:.6rem .75rem}
+        .mail-item{grid-template-columns:55px 1fr auto 25px;padding:.6rem .75rem}
         .mail-avatar{width:24px;height:24px;font-size:.6rem}
         .mail-sender{font-size:.8rem}
         .mail-subject{font-size:.78rem}
+        .mail-action-btn{width:24px;height:24px;font-size:1rem}
     }
 </style>
 @endsection
@@ -91,7 +102,7 @@
 
         <div class="mail-list">
             @forelse($messages as $msg)
-                <div class="mail-item {{ !$msg['seen'] ? 'unread' : '' }}" onclick="if(event.target.type !== 'checkbox') window.location.href='{{ route('webmail.message.show', $msg['uid']) }}?folder={{ urlencode($currentFolder ?? 'INBOX') }}'">
+                <div class="mail-item {{ !$msg['seen'] ? 'unread' : '' }}" onclick="if(event.target.type !== 'checkbox' && !event.target.closest('.mail-action-btn')) window.location.href='{{ route('webmail.message.show', $msg['uid']) }}?folder={{ urlencode($currentFolder ?? 'INBOX') }}'">
                     <div style="display:flex;align-items:center;gap:.75rem">
                         <input type="checkbox" name="uids[]" value="{{ $msg['uid'] }}" class="mail-checkbox" style="accent-color:var(--accent);width:16px;height:16px;cursor:pointer">
                         <div class="mail-avatar">{{ strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $msg['from']), 0, 1) ?: '@') }}</div>
@@ -99,6 +110,7 @@
                     <div class="mail-sender" title="{{ $msg['from'] }}">{{ explode('<', $msg['from'])[0] }}</div>
                     <div class="mail-subject">{{ $msg['subject'] }}</div>
                     <div class="mail-date">{{ date('M d', strtotime($msg['date'])) }}</div>
+                    <div class="mail-action-btn" title="Create Filter" onclick="event.stopPropagation(); openFilterModal('{{ htmlspecialchars($msg['from']) }}', '{{ htmlspecialchars($msg['subject']) }}')">⋮</div>
                 </div>
             @empty
                 <div class="empty-state">
@@ -118,6 +130,62 @@
     
     <form id="searchForm" action="{{ route('webmail.search') }}" method="GET" style="display:none"></form>
     
+    <!-- Quick Filter Modal -->
+    <div class="modal-overlay" id="filterModal">
+        <div class="filter-modal">
+            <div class="modal-close" onclick="closeFilterModal()">×</div>
+            <h3 class="modal-title">Create Mail Filter</h3>
+            <p style="font-size:0.85rem;color:var(--t3);margin-bottom:1rem">Automatically process incoming emails.</p>
+            
+            <form action="{{ route('webmail.settings.filter.add') }}" method="POST">
+                @csrf
+                <div style="margin-bottom:1rem">
+                    <label style="display:block;margin-bottom:0.3rem;font-size:0.85rem;color:var(--t2)">Filter Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="e.g. Block Spam Sender" required>
+                </div>
+                
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+                    <div>
+                        <label style="display:block;margin-bottom:0.3rem;font-size:0.85rem;color:var(--t2)">Match Field</label>
+                        <select name="criteria_field" id="filterField" class="form-control" onchange="updateFilterValue()">
+                            <option value="from">Sender Email (mail)</option>
+                            <option value="subject">Subject Filter</option>
+                            <option value="body">Has the word (Body keyword)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;margin-bottom:0.3rem;font-size:0.85rem;color:var(--t2)">Operator</label>
+                        <select name="criteria_operator" class="form-control">
+                            <option value="contains">Contains</option>
+                            <option value="exact">Exact Match</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom:1rem">
+                    <label style="display:block;margin-bottom:0.3rem;font-size:0.85rem;color:var(--t2)">Keyword / Value</label>
+                    <input type="text" name="criteria_value" id="filterValue" class="form-control" required>
+                    <input type="hidden" id="rawFromValue">
+                    <input type="hidden" id="rawSubjectValue">
+                </div>
+                
+                <div style="margin-bottom:1.5rem">
+                    <label style="display:block;margin-bottom:0.3rem;font-size:0.85rem;color:var(--t2)">Action</label>
+                    <select name="action" class="form-control">
+                        <option value="delete">Delete Permanently</option>
+                        <option value="move_trash">Move to Trash</option>
+                        <option value="move_spam">Move to Spam</option>
+                    </select>
+                </div>
+                
+                <div style="display:flex;justify-content:flex-end;gap:0.5rem">
+                    <button type="button" class="btn btn-secondary" onclick="closeFilterModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <script>
         document.querySelectorAll('.mail-checkbox').forEach(cb => {
             cb.addEventListener('change', () => {
@@ -125,6 +193,40 @@
                 document.getElementById('bulkActions').style.display = anyChecked ? 'inline-block' : 'none';
             });
         });
+
+        // Quick Filter Logic
+        function openFilterModal(from, subject) {
+            document.getElementById('filterModal').classList.add('active');
+            
+            // Extract pure email from "Name <email@domain.com>"
+            let pureEmail = from;
+            const match = from.match(/<([^>]+)>/);
+            if(match) pureEmail = match[1];
+            
+            document.getElementById('rawFromValue').value = pureEmail;
+            document.getElementById('rawSubjectValue').value = subject;
+            
+            // Trigger update to populate the value field based on default selection (Sender)
+            updateFilterValue();
+        }
+        
+        function closeFilterModal() {
+            document.getElementById('filterModal').classList.remove('active');
+        }
+        
+        function updateFilterValue() {
+            const field = document.getElementById('filterField').value;
+            const valInput = document.getElementById('filterValue');
+            
+            if (field === 'from') {
+                valInput.value = document.getElementById('rawFromValue').value;
+            } else if (field === 'subject') {
+                valInput.value = document.getElementById('rawSubjectValue').value;
+            } else {
+                valInput.value = '';
+                valInput.placeholder = 'Enter keyword...';
+            }
+        }
     </script>
 </div>
 @endsection
