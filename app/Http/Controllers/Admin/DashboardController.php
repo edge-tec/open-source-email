@@ -64,4 +64,42 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', compact('stats', 'recentLogs', 'recentUsers', 'chartData', 'systemStats'));
     }
+
+    public function metrics()
+    {
+        // CPU Load
+        $load = function_exists('sys_getloadavg') ? sys_getloadavg() : [0];
+        $cpuLoad = $load[0] ?? 0;
+        
+        // RAM
+        $ramTotal = 0; $ramUsed = 0; $ramFree = 0;
+        $freeOutput = @shell_exec('free -m 2>/dev/null');
+        if ($freeOutput) {
+            $lines = explode("\n", trim($freeOutput));
+            if (isset($lines[1])) {
+                $parts = preg_split('/\s+/', $lines[1]);
+                $ramTotal = (int)($parts[1] ?? 0);
+                $ramUsed = (int)($parts[2] ?? 0);
+                $ramFree = (int)($parts[3] ?? 0);
+            }
+        }
+
+        // Disk Space (in GB)
+        $diskTotalBytes = @disk_total_space('/');
+        $diskFreeBytes = @disk_free_space('/');
+        $diskTotal = $diskTotalBytes ? round($diskTotalBytes / 1073741824, 2) : 0;
+        $diskFree = $diskFreeBytes ? round($diskFreeBytes / 1073741824, 2) : 0;
+        $diskUsed = $diskTotal - $diskFree;
+
+        return response()->json([
+            'cpu_load' => round($cpuLoad, 2),
+            'ram_total' => $ramTotal,
+            'ram_used' => $ramUsed,
+            'ram_free' => $ramFree,
+            'disk_total' => $diskTotal,
+            'disk_used' => $diskUsed,
+            'disk_free' => $diskFree,
+            'timestamp' => now()->format('H:i:s')
+        ]);
+    }
 }

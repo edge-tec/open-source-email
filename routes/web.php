@@ -54,6 +54,7 @@ Route::middleware('auth')->group(function () {
 // Admin Panel
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'two-factor'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/system-metrics', [DashboardController::class, 'metrics'])->name('system-metrics');
 
     // Domain Management
     Route::resource('domains', DomainController::class);

@@ -36,26 +36,46 @@
     </div>
 
     <div class="table-card" style="margin-bottom:1.5rem">
-        <div class="table-header"><div class="table-title">System Resources</div></div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:1.5rem;padding:1.5rem">
+        <div class="table-header">
+            <div class="table-title">System Resources (Live)</div>
+            <div style="font-size:0.75rem; color:var(--ok); display:flex; align-items:center; gap:0.4rem;">
+                <span style="display:inline-block; width:8px; height:8px; background:var(--ok); border-radius:50%; animation: pulse 2s infinite;"></span> Live Updates
+            </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:1.5rem;padding:1.5rem">
             <div>
-                <div style="font-size:.8rem;color:var(--t2);margin-bottom:.25rem;text-transform:uppercase;font-weight:600">CPU Load (1m)</div>
-                <div style="font-size:1.5rem;font-weight:700;color:var(--t1)">{{ $systemStats['cpu_load'] }}</div>
+                <div style="font-size:.8rem;color:var(--t2);margin-bottom:.25rem;text-transform:uppercase;font-weight:600">CPU Load</div>
+                <div id="live-cpu" style="font-size:1.5rem;font-weight:700;color:var(--t1)">{{ $systemStats['cpu_load'] }}</div>
             </div>
             <div>
                 <div style="font-size:.8rem;color:var(--t2);margin-bottom:.25rem;text-transform:uppercase;font-weight:600">RAM Total</div>
-                <div style="font-size:1.5rem;font-weight:700;color:var(--t1)">{{ $systemStats['ram_total'] ? $systemStats['ram_total'] . ' MB' : 'N/A' }}</div>
+                <div id="live-ram-total" style="font-size:1.5rem;font-weight:700;color:var(--t1)">{{ $systemStats['ram_total'] ? $systemStats['ram_total'] . ' MB' : 'N/A' }}</div>
             </div>
             <div>
                 <div style="font-size:.8rem;color:var(--t2);margin-bottom:.25rem;text-transform:uppercase;font-weight:600">RAM Used</div>
-                <div style="font-size:1.5rem;font-weight:700;color:var(--warn)">{{ $systemStats['ram_used'] ? $systemStats['ram_used'] . ' MB' : 'N/A' }}</div>
+                <div id="live-ram-used" style="font-size:1.5rem;font-weight:700;color:var(--warn)">{{ $systemStats['ram_used'] ? $systemStats['ram_used'] . ' MB' : 'N/A' }}</div>
             </div>
             <div>
-                <div style="font-size:.8rem;color:var(--t2);margin-bottom:.25rem;text-transform:uppercase;font-weight:600">RAM Free</div>
-                <div style="font-size:1.5rem;font-weight:700;color:var(--ok)">{{ $systemStats['ram_free'] ? $systemStats['ram_free'] . ' MB' : 'N/A' }}</div>
+                <div style="font-size:.8rem;color:var(--t2);margin-bottom:.25rem;text-transform:uppercase;font-weight:600">Disk Used</div>
+                <div id="live-disk-used" style="font-size:1.5rem;font-weight:700;color:var(--info)">-- GB</div>
+            </div>
+            <div>
+                <div style="font-size:.8rem;color:var(--t2);margin-bottom:.25rem;text-transform:uppercase;font-weight:600">Disk Free</div>
+                <div id="live-disk-free" style="font-size:1.5rem;font-weight:700;color:var(--ok)">-- GB</div>
             </div>
         </div>
+        <div style="padding:0 1.5rem 1.5rem 1.5rem; height:250px;">
+            <canvas id="liveSystemChart"></canvas>
+        </div>
     </div>
+
+    <style>
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+    </style>
 
     <div class="table-card" style="margin-bottom:1.5rem">
         <div class="table-header"><div class="table-title">Email Activity (Last 7 Days)</div></div>
@@ -66,8 +86,9 @@
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById('emailChart').getContext('2d');
-        new Chart(ctx, {
+        // Email Activity Chart
+        const ctxEmail = document.getElementById('emailChart').getContext('2d');
+        new Chart(ctxEmail, {
             type: 'line',
             data: {
                 labels: {!! json_encode($chartData['labels']) !!},
@@ -110,6 +131,85 @@
                 }
             }
         });
+
+        // Live System Resources Chart
+        const ctxLive = document.getElementById('liveSystemChart').getContext('2d');
+        const liveChart = new Chart(ctxLive, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'CPU Load',
+                        data: [],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'RAM Usage (MB)',
+                        data: [],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 400 // Smooth scrolling
+                },
+                plugins: {
+                    legend: { labels: { color: '#9ca3af', font: { family: 'system-ui' } } }
+                },
+                scales: {
+                    x: { ticks: { color: '#6b7280' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { beginAtZero: true, ticks: { color: '#6b7280' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                }
+            }
+        });
+
+        // Live Polling
+        const maxDataPoints = 30; // 30 points * 2 seconds = 60 seconds history
+
+        function fetchLiveMetrics() {
+            fetch('{{ route("admin.system-metrics") }}')
+                .then(response => response.json())
+                .then(data => {
+                    // Update Text Elements
+                    document.getElementById('live-cpu').innerText = data.cpu_load;
+                    document.getElementById('live-ram-total').innerText = data.ram_total + ' MB';
+                    document.getElementById('live-ram-used').innerText = data.ram_used + ' MB';
+                    document.getElementById('live-disk-used').innerText = data.disk_used + ' GB';
+                    document.getElementById('live-disk-free').innerText = data.disk_free + ' GB';
+
+                    // Update Graph
+                    const timeLabel = data.timestamp;
+                    
+                    // Push new data
+                    liveChart.data.labels.push(timeLabel);
+                    liveChart.data.datasets[0].data.push(data.cpu_load);
+                    liveChart.data.datasets[1].data.push(data.ram_used);
+
+                    // Remove old data to create scrolling effect
+                    if (liveChart.data.labels.length > maxDataPoints) {
+                        liveChart.data.labels.shift();
+                        liveChart.data.datasets[0].data.shift();
+                        liveChart.data.datasets[1].data.shift();
+                    }
+
+                    liveChart.update('quiet'); // Update without full animation for smoother stream
+                })
+                .catch(err => console.error("Error fetching live metrics:", err));
+        }
+
+        // Start polling immediately and then every 2 seconds
+        fetchLiveMetrics();
+        setInterval(fetchLiveMetrics, 2000);
     </script>
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem">
