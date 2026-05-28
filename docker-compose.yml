@@ -61,7 +61,7 @@ services:
     domainname: example.com
     container_name: edgemail-mailserver
     ports:
-      - "25:25"    # SMTP
+      - "2525:25"  # SMTP
       - "143:143"  # IMAP
       - "465:465"  # SMTPS
       - "587:587"  # Submission
