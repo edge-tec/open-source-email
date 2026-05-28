@@ -91,6 +91,32 @@ class DashboardController extends Controller
         $diskFree = $diskFreeBytes ? round($diskFreeBytes / 1073741824, 2) : 0;
         $diskUsed = $diskTotal - $diskFree;
 
+        // Docker Containers
+        $containers = [];
+        if (file_exists('/var/run/docker.sock')) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_UNIX_SOCKET_PATH, '/var/run/docker.sock');
+            curl_setopt($ch, CURLOPT_URL, "http://localhost/containers/json?all=1");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            
+            if ($response) {
+                $dockerData = json_decode($response, true);
+                if (is_array($dockerData)) {
+                    foreach ($dockerData as $c) {
+                        $containers[] = [
+                            'name' => ltrim($c['Names'][0] ?? 'Unknown', '/'),
+                            'image' => $c['Image'] ?? 'Unknown',
+                            'state' => $c['State'] ?? 'unknown',
+                            'status' => $c['Status'] ?? 'Unknown'
+                        ];
+                    }
+                }
+            }
+        }
+
         return response()->json([
             'cpu_load' => round($cpuLoad, 2),
             'ram_total' => $ramTotal,
@@ -99,6 +125,7 @@ class DashboardController extends Controller
             'disk_total' => $diskTotal,
             'disk_used' => $diskUsed,
             'disk_free' => $diskFree,
+            'containers' => $containers,
             'timestamp' => now()->format('H:i:s')
         ]);
     }

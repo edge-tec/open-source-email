@@ -78,6 +78,28 @@
     </style>
 
     <div class="table-card" style="margin-bottom:1.5rem">
+        <div class="table-header">
+            <div class="table-title">Docker Containers</div>
+            <div style="font-size:0.75rem; color:var(--t3);">Live API Sync</div>
+        </div>
+        <div class="table-scroll">
+            <table id="containersTable">
+                <thead>
+                    <tr>
+                        <th style="width: 25%">Container Name</th>
+                        <th style="width: 35%">Image</th>
+                        <th style="width: 15%">State</th>
+                        <th style="width: 25%">Status (Uptime)</th>
+                    </tr>
+                </thead>
+                <tbody id="containersTbody">
+                    <tr><td colspan="4" style="text-align:center; padding: 2rem; color: var(--t3);">Loading container data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-card" style="margin-bottom:1.5rem">
         <div class="table-header"><div class="table-title">Email Activity (Last 7 Days)</div></div>
         <div style="padding:1.5rem;height:300px">
             <canvas id="emailChart"></canvas>
@@ -203,6 +225,33 @@
                     }
 
                     liveChart.update('quiet'); // Update without full animation for smoother stream
+
+                    // Update Docker Containers Table
+                    if (data.containers && data.containers.length > 0) {
+                        const tbody = document.getElementById('containersTbody');
+                        tbody.innerHTML = '';
+                        data.containers.forEach(c => {
+                            let stateBadge = '';
+                            if (c.state === 'running') stateBadge = '<span class="badge badge-ok">Running</span>';
+                            else if (c.state === 'exited') stateBadge = '<span class="badge badge-err">Exited</span>';
+                            else stateBadge = `<span class="badge badge-warn">${c.state}</span>`;
+
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td style="font-weight: 500; color: var(--t1);">${c.name}</td>
+                                    <td style="font-family: monospace; font-size: 0.8rem; color: var(--t2);">${c.image}</td>
+                                    <td>${stateBadge}</td>
+                                    <td style="font-size: 0.8rem; color: var(--t3);">${c.status}</td>
+                                </tr>
+                            `;
+                        });
+                    } else if (data.containers && data.containers.length === 0) {
+                        const tbody = document.getElementById('containersTbody');
+                        if (tbody.innerHTML.includes('Loading')) {
+                            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 2rem; color: var(--t3);">Docker socket not mounted. Check Installation Guide.</td></tr>';
+                        }
+                    }
+
                 })
                 .catch(err => console.error("Error fetching live metrics:", err));
         }

@@ -10,6 +10,7 @@ services:
     volumes:
       - ./:/var/www/html
       - mail-data:/var/vmail
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
