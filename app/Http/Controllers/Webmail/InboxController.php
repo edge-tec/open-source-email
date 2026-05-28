@@ -19,6 +19,16 @@ class InboxController extends Controller
             $imap = new ImapService($mailbox);
             $messages = $imap->getMessages('INBOX', $request->integer('page', 1), 25);
             $folders = $imap->getFolders();
+            
+            $defaults = ['Sent', 'Drafts', 'Trash', 'Junk'];
+            $missing = array_diff($defaults, $folders);
+            if (!empty($missing)) {
+                foreach ($missing as $f) {
+                    try { $imap->createFolder($f); } catch (\Exception $e) {}
+                }
+                $folders = $imap->getFolders();
+            }
+
             $unread = $imap->getUnreadCount('INBOX');
         } catch (\Exception $e) {
             $messages = collect();
@@ -38,6 +48,16 @@ class InboxController extends Controller
             $imap = new ImapService($mailbox);
             $messages = $imap->getMessages($folder, $request->integer('page', 1), 25);
             $folders = $imap->getFolders();
+            
+            $defaults = ['Sent', 'Drafts', 'Trash', 'Junk'];
+            $missing = array_diff($defaults, $folders);
+            if (!empty($missing)) {
+                foreach ($missing as $f) {
+                    try { $imap->createFolder($f); } catch (\Exception $e) {}
+                }
+                $folders = $imap->getFolders();
+            }
+
             $unread = $imap->getUnreadCount($folder);
         } catch (\Exception $e) {
             $messages = collect();
