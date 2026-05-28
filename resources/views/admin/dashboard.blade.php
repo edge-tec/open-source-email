@@ -112,12 +112,13 @@
         });
     </script>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(400px, 1fr));gap:1rem">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem">
         <div class="table-card">
             <div class="table-header">
                 <div class="table-title">Recent Email Activity</div>
                 <a href="{{ route('admin.logs.index') }}" class="btn btn-secondary btn-sm">View All</a>
             </div>
+            <div class="table-scroll">
             <table>
                 <thead><tr><th>Direction</th><th>From</th><th>To</th><th>Subject</th><th>Status</th><th>Time</th></tr></thead>
                 <tbody>
@@ -135,10 +136,12 @@
                 @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
 
         <div class="table-card">
             <div class="table-header"><div class="table-title">Recent Users</div></div>
+            <div class="table-scroll">
             <table>
                 <thead><tr><th>Name</th><th>Role</th></tr></thead>
                 <tbody>
@@ -153,6 +156,7 @@
                 @endforeach
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 @endsection

@@ -1,19 +1,49 @@
 @extends('webmail.layout')
 @section('title', 'Settings')
 
+@section('styles')
+<style>
+    .settings-container{padding:2rem;max-width:800px;margin:0 auto;overflow-y:auto;height:100%}
+    .settings-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:var(--shadow)}
+    .settings-card-title{font-size:1.1rem;font-weight:600;margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.5rem}
+    .settings-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+    .settings-grid-3{display:grid;grid-template-columns:1fr 1fr 2fr;gap:1rem;margin-bottom:1rem;align-items:end}
+    .settings-grid-2-action{display:grid;grid-template-columns:1fr 2fr;gap:1rem;margin-bottom:1rem;align-items:end}
+    .filter-table{width:100%;border-collapse:collapse;font-size:0.9rem}
+    .filter-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:1.5rem}
+
+    /* ===== RESPONSIVE: Mobile ===== */
+    @media(max-width:768px){
+        .settings-container{padding:1rem}
+        .settings-card{padding:1rem}
+        .settings-grid-2{grid-template-columns:1fr;gap:1rem}
+        .settings-grid-3{grid-template-columns:1fr;gap:.75rem}
+        .settings-grid-2-action{grid-template-columns:1fr;gap:.75rem}
+    }
+
+    /* ===== RESPONSIVE: Small Phone ===== */
+    @media(max-width:480px){
+        .settings-container{padding:.75rem}
+        .settings-container h2{font-size:1.15rem}
+        .settings-card{padding:.75rem;border-radius:8px}
+        .settings-card-title{font-size:1rem}
+    }
+</style>
+@endsection
+
 @section('content')
-<div style="padding:2rem;max-width:800px;margin:0 auto;overflow-y:auto;height:100%">
+<div class="settings-container">
     <h2 style="font-size:1.4rem;font-weight:700;margin-bottom:1.5rem">Mailbox Settings</h2>
     
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
     
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:var(--shadow)">
-        <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.5rem">Client Connection Details</h3>
+    <div class="settings-card">
+        <h3 class="settings-card-title">Client Connection Details</h3>
         <p style="font-size:.85rem;color:var(--t2);margin-bottom:1rem">Use these settings to configure your email in third-party clients like Outlook, Apple Mail, or Thunderbird.</p>
         
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+        <div class="settings-grid-2">
             <div>
                 <h4 style="font-size:.95rem;font-weight:600;margin-bottom:.5rem;color:var(--accent)">Incoming Server (IMAP)</h4>
                 <div style="font-size:.85rem;line-height:1.6;color:var(--t1)">
@@ -37,8 +67,8 @@
         </div>
     </div>
     
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:var(--shadow)">
-        <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.5rem">Profile & Signature</h3>
+    <div class="settings-card">
+        <h3 class="settings-card-title">Profile & Signature</h3>
         <form method="POST" action="{{ route('webmail.settings.update') }}">
             @csrf
             <div class="form-group" style="margin-bottom:1rem;">
@@ -55,8 +85,8 @@
         </form>
     </div>
     
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:var(--shadow)">
-        <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.5rem">Vacation / Autoresponder</h3>
+    <div class="settings-card">
+        <h3 class="settings-card-title">Vacation / Autoresponder</h3>
         <form method="POST" action="{{ route('webmail.settings.update') }}">
             @csrf
             <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem">
@@ -74,7 +104,7 @@
                 <textarea name="autoresponder_body" class="form-control" rows="4">{{ $autoresponder->body ?? "I am currently away and will reply as soon as possible." }}</textarea>
             </div>
             
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+            <div class="settings-grid-2" style="margin-bottom:1rem">
                 <div class="form-group">
                     <label class="form-label">Start Date (Optional)</label>
                     <input type="date" name="autoresponder_start" class="form-control" value="{{ $autoresponder->start_date ?? '' }}">
@@ -88,8 +118,8 @@
         </form>
     </div>
     
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.5rem;box-shadow:var(--shadow)">
-        <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.5rem">Email Forwarding</h3>
+    <div class="settings-card">
+        <h3 class="settings-card-title">Email Forwarding</h3>
         <form method="POST" action="{{ route('webmail.settings.update') }}">
             @csrf
             @php $rule = $forwarding->first(); @endphp
@@ -112,12 +142,12 @@
         </form>
     </div>
 
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)">
-        <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.5rem">Email Filters</h3>
+    <div class="settings-card" style="margin-top:1.5rem">
+        <h3 class="settings-card-title">Email Filters</h3>
         
         @if($filters && $filters->count() > 0)
-            <div style="margin-bottom:1.5rem;">
-                <table style="width:100%; border-collapse: collapse; font-size:0.9rem;">
+            <div class="filter-table-wrap">
+                <table class="filter-table">
                     <thead>
                         <tr style="border-bottom:1px solid var(--border); text-align:left;">
                             <th style="padding:0.5rem">Name</th>
@@ -148,14 +178,14 @@
 
         <form method="POST" action="{{ route('webmail.settings.filter.add') }}">
             @csrf
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+            <div class="settings-grid-2" style="margin-bottom:1rem">
                 <div class="form-group">
                     <label class="form-label">Filter Name</label>
                     <input type="text" name="name" class="form-control" placeholder="e.g. Marketing emails" required>
                 </div>
             </div>
             
-            <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:1rem;margin-bottom:1rem;align-items:end;">
+            <div class="settings-grid-3">
                 <div class="form-group" style="margin-bottom:0">
                     <label class="form-label">If</label>
                     <select name="criteria_field" class="form-control" required>
@@ -175,7 +205,7 @@
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 2fr;gap:1rem;margin-bottom:1rem;align-items:end;">
+            <div class="settings-grid-2-action">
                 <div class="form-group" style="margin-bottom:0">
                     <label class="form-label">Then</label>
                     <select name="action" class="form-control" required id="filter_action">

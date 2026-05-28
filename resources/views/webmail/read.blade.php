@@ -5,7 +5,7 @@
 <style>
     .read-container{display:flex;flex-direction:column;height:100%;background:var(--bg2)}
     .read-toolbar{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-    .read-actions{display:flex;gap:.5rem}
+    .read-actions{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
     .read-header{padding:1.5rem;border-bottom:1px solid var(--border)}
     .read-subject{font-size:1.4rem;font-weight:700;margin-bottom:1rem;color:var(--t1)}
     .read-meta{display:flex;justify-content:space-between;align-items:center}
@@ -13,15 +13,41 @@
     .sender-avatar{width:40px;height:40px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:bold;flex-shrink:0;}
     .sender-name{font-weight:600;color:var(--t1);font-size:.95rem}
     .sender-email{font-size:.8rem;color:var(--t3)}
-    .read-date{font-size:.8rem;color:var(--t2)}
+    .read-date{font-size:.8rem;color:var(--t2);flex-shrink:0}
     
     .read-body{padding:2rem 1.5rem;flex:1;overflow-y:auto;font-size:.95rem;line-height:1.6;color:var(--t1)}
     .read-body img{max-width:100%;height:auto}
     .read-body blockquote{border-left:3px solid var(--border);padding-left:1rem;margin:1rem 0;color:var(--t2)}
     
     .attachments-area{padding:1rem 1.5rem;border-top:1px solid var(--border);background:var(--bg)}
-    .attachment-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem .75rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-size:.8rem;color:var(--t2);margin-right:.5rem;text-decoration:none}
+    .attachment-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem .75rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-size:.8rem;color:var(--t2);margin-right:.5rem;text-decoration:none;margin-bottom:.5rem}
     .attachment-badge:hover{background:var(--bg-hover)}
+
+    /* ===== RESPONSIVE: Mobile ===== */
+    @media(max-width:768px){
+        .read-toolbar{flex-direction:column;gap:.75rem;align-items:stretch;padding:1rem}
+        .read-actions{justify-content:center}
+        .read-header{padding:1rem}
+        .read-subject{font-size:1.1rem;margin-bottom:.75rem}
+        .read-meta{flex-direction:column;align-items:flex-start;gap:.75rem}
+        .sender-info{gap:.75rem}
+        .sender-avatar{width:34px;height:34px;font-size:.9rem}
+        .read-date{align-self:flex-end}
+        .read-body{padding:1rem}
+        .attachments-area{padding:.75rem 1rem}
+        .attachment-badge{font-size:.75rem;padding:.4rem .6rem}
+    }
+
+    /* ===== RESPONSIVE: Small Phone ===== */
+    @media(max-width:480px){
+        .read-toolbar{padding:.75rem}
+        .read-actions .btn{padding:.35rem .6rem;font-size:.78rem}
+        .read-header{padding:.75rem}
+        .read-subject{font-size:1rem}
+        .sender-name{font-size:.85rem}
+        .sender-email{font-size:.72rem}
+        .read-body{padding:.75rem;font-size:.88rem}
+    }
 </style>
 @endsection
 
