@@ -87,7 +87,7 @@
             <a href="{{ route('webmail.settings') }}" class="nav-link {{ request()->routeIs('webmail.settings') ? 'active' : '' }}" style="padding:.5rem">
                 <span class="nav-link-icon">⚙️ Settings</span>
             </a>
-            @if(auth()->user()->isAdmin())
+            @if(auth()->check() && auth()->user()->isAdmin())
             <a href="{{ route('admin.dashboard') }}" class="nav-link" style="padding:.5rem">
                 <span class="nav-link-icon">🛡️ Admin Panel</span>
             </a>
