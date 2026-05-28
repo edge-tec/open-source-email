@@ -1,0 +1,21 @@
+{
+    "table": "dkim_keys",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "domain_id", "type": "bigInteger", "unsigned": true },
+        { "name": "selector", "type": "string", "length": 63 },
+        { "name": "private_key", "type": "text" },
+        { "name": "public_key", "type": "text" },
+        { "name": "dns_record", "type": "text", "nullable": true },
+        { "name": "key_bits", "type": "integer", "default": 2048 },
+        { "name": "status", "type": "enum", "allowed": ["active", "inactive", "rotating"], "default": "active" }
+    ],
+    "indexes": [
+        { "columns": ["domain_id", "selector"], "type": "unique" }
+    ],
+    "foreign_keys": [
+        { "column": "domain_id", "references": "id", "on": "domains", "onDelete": "cascade" }
+    ],
+    "timestamps": true,
+    "soft_deletes": false
+}

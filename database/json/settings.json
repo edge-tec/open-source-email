@@ -1,0 +1,19 @@
+{
+    "table": "settings",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "group", "type": "string", "length": 100, "default": "general" },
+        { "name": "key", "type": "string", "length": 255 },
+        { "name": "value", "type": "text", "nullable": true },
+        { "name": "type", "type": "enum", "allowed": ["string", "integer", "boolean", "json", "text"], "default": "string" },
+        { "name": "description", "type": "string", "length": 500, "nullable": true },
+        { "name": "is_public", "type": "boolean", "default": false }
+    ],
+    "indexes": [
+        { "columns": ["group", "key"], "type": "unique" },
+        { "columns": ["group"], "type": "index" }
+    ],
+    "foreign_keys": [],
+    "timestamps": true,
+    "soft_deletes": false
+}

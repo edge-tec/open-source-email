@@ -1,0 +1,32 @@
+{
+    "table": "domains",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "user_id", "type": "bigInteger", "unsigned": true },
+        { "name": "domain", "type": "string", "length": 255, "unique": true },
+        { "name": "description", "type": "text", "nullable": true },
+        { "name": "status", "type": "enum", "allowed": ["active", "inactive", "pending"], "default": "pending" },
+        { "name": "max_mailboxes", "type": "integer", "default": 10 },
+        { "name": "max_aliases", "type": "integer", "default": 50 },
+        { "name": "max_quota", "type": "integer", "default": 10240, "comment": "Max storage in MB" },
+        { "name": "catch_all", "type": "string", "length": 255, "nullable": true, "comment": "Catch-all email address" },
+        { "name": "dkim_enabled", "type": "boolean", "default": false },
+        { "name": "dkim_selector", "type": "string", "length": 63, "default": "edgemail" },
+        { "name": "dkim_private_key", "type": "text", "nullable": true },
+        { "name": "dkim_public_key", "type": "text", "nullable": true },
+        { "name": "spf_record", "type": "string", "length": 500, "nullable": true },
+        { "name": "dmarc_record", "type": "string", "length": 500, "nullable": true },
+        { "name": "transport", "type": "string", "length": 255, "default": "virtual" },
+        { "name": "is_backup_mx", "type": "boolean", "default": false },
+        { "name": "verified_at", "type": "timestamp", "nullable": true }
+    ],
+    "indexes": [
+        { "columns": ["user_id"], "type": "index" },
+        { "columns": ["status"], "type": "index" }
+    ],
+    "foreign_keys": [
+        { "column": "user_id", "references": "id", "on": "users", "onDelete": "cascade" }
+    ],
+    "timestamps": true,
+    "soft_deletes": true
+}

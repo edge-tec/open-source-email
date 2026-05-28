@@ -1,0 +1,23 @@
+{
+    "table": "storage_usage",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "mailbox_id", "type": "bigInteger", "unsigned": true },
+        { "name": "domain_id", "type": "bigInteger", "unsigned": true },
+        { "name": "used_bytes", "type": "bigInteger", "default": 0 },
+        { "name": "message_count", "type": "integer", "default": 0 },
+        { "name": "quota_bytes", "type": "bigInteger", "default": 0 },
+        { "name": "percentage_used", "type": "decimal", "precision": 5, "scale": 2, "default": 0 },
+        { "name": "last_calculated_at", "type": "timestamp", "nullable": true }
+    ],
+    "indexes": [
+        { "columns": ["mailbox_id"], "type": "unique" },
+        { "columns": ["domain_id"], "type": "index" }
+    ],
+    "foreign_keys": [
+        { "column": "mailbox_id", "references": "id", "on": "mailboxes", "onDelete": "cascade" },
+        { "column": "domain_id", "references": "id", "on": "domains", "onDelete": "cascade" }
+    ],
+    "timestamps": true,
+    "soft_deletes": false
+}

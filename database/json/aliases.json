@@ -1,0 +1,22 @@
+{
+    "table": "aliases",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "domain_id", "type": "bigInteger", "unsigned": true },
+        { "name": "source", "type": "string", "length": 255, "comment": "Source email address" },
+        { "name": "destination", "type": "text", "comment": "Destination email(s), comma separated" },
+        { "name": "status", "type": "enum", "allowed": ["active", "inactive"], "default": "active" },
+        { "name": "is_catchall", "type": "boolean", "default": false },
+        { "name": "comment", "type": "string", "length": 500, "nullable": true }
+    ],
+    "indexes": [
+        { "columns": ["domain_id"], "type": "index" },
+        { "columns": ["source"], "type": "index" },
+        { "columns": ["status"], "type": "index" }
+    ],
+    "foreign_keys": [
+        { "column": "domain_id", "references": "id", "on": "domains", "onDelete": "cascade" }
+    ],
+    "timestamps": true,
+    "soft_deletes": true
+}

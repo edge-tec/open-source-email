@@ -1,0 +1,21 @@
+{
+    "table": "api_tokens",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "user_id", "type": "bigInteger", "unsigned": true },
+        { "name": "name", "type": "string", "length": 255 },
+        { "name": "token", "type": "string", "length": 64, "unique": true },
+        { "name": "abilities", "type": "text", "nullable": true, "comment": "JSON array of abilities" },
+        { "name": "last_used_at", "type": "timestamp", "nullable": true },
+        { "name": "expires_at", "type": "timestamp", "nullable": true }
+    ],
+    "indexes": [
+        { "columns": ["user_id"], "type": "index" },
+        { "columns": ["token"], "type": "index" }
+    ],
+    "foreign_keys": [
+        { "column": "user_id", "references": "id", "on": "users", "onDelete": "cascade" }
+    ],
+    "timestamps": true,
+    "soft_deletes": false
+}

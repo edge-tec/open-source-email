@@ -1,0 +1,16 @@
+{
+    "table": "mailbox_filters",
+    "columns": [
+        {"name": "id", "type": "id"},
+        {"name": "mailbox_id", "type": "foreignId", "constrained": true, "onDelete": "cascade"},
+        {"name": "name", "type": "string"},
+        {"name": "criteria_field", "type": "string", "comment": "e.g., sender, subject"},
+        {"name": "criteria_operator", "type": "string", "comment": "e.g., contains, equals"},
+        {"name": "criteria_value", "type": "string"},
+        {"name": "action", "type": "string", "comment": "e.g., move_to, delete, mark_read"},
+        {"name": "action_value", "type": "string", "nullable": true, "comment": "e.g., folder name"},
+        {"name": "status", "type": "string", "default": "'active'"},
+        {"name": "created_at", "type": "timestamp", "nullable": true},
+        {"name": "updated_at", "type": "timestamp", "nullable": true}
+    ]
+}

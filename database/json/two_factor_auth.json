@@ -1,0 +1,20 @@
+{
+    "table": "two_factor_auth",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "user_id", "type": "bigInteger", "unsigned": true },
+        { "name": "secret", "type": "string", "length": 255 },
+        { "name": "recovery_codes", "type": "text", "nullable": true, "comment": "JSON array of recovery codes" },
+        { "name": "is_enabled", "type": "boolean", "default": false },
+        { "name": "confirmed_at", "type": "timestamp", "nullable": true },
+        { "name": "last_used_at", "type": "timestamp", "nullable": true }
+    ],
+    "indexes": [
+        { "columns": ["user_id"], "type": "unique" }
+    ],
+    "foreign_keys": [
+        { "column": "user_id", "references": "id", "on": "users", "onDelete": "cascade" }
+    ],
+    "timestamps": true,
+    "soft_deletes": false
+}

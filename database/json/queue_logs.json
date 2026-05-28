@@ -1,0 +1,23 @@
+{
+    "table": "queue_logs",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "queue_id", "type": "string", "length": 255, "nullable": true },
+        { "name": "sender", "type": "string", "length": 255 },
+        { "name": "recipient", "type": "string", "length": 255 },
+        { "name": "subject", "type": "string", "length": 500, "nullable": true },
+        { "name": "size", "type": "bigInteger", "default": 0 },
+        { "name": "status", "type": "enum", "allowed": ["queued", "active", "deferred", "hold", "bounced", "sent"], "default": "queued" },
+        { "name": "attempts", "type": "integer", "default": 0 },
+        { "name": "next_retry_at", "type": "timestamp", "nullable": true },
+        { "name": "error_message", "type": "text", "nullable": true }
+    ],
+    "indexes": [
+        { "columns": ["status"], "type": "index" },
+        { "columns": ["queue_id"], "type": "index" },
+        { "columns": ["created_at"], "type": "index" }
+    ],
+    "foreign_keys": [],
+    "timestamps": true,
+    "soft_deletes": false
+}

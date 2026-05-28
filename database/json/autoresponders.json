@@ -1,0 +1,23 @@
+{
+    "table": "autoresponders",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "mailbox_id", "type": "bigInteger", "unsigned": true },
+        { "name": "subject", "type": "string", "length": 255 },
+        { "name": "body", "type": "text" },
+        { "name": "is_html", "type": "boolean", "default": false },
+        { "name": "status", "type": "enum", "allowed": ["active", "inactive"], "default": "inactive" },
+        { "name": "start_date", "type": "date", "nullable": true },
+        { "name": "end_date", "type": "date", "nullable": true },
+        { "name": "interval_hours", "type": "integer", "default": 24, "comment": "Min hours between auto-replies to same sender" }
+    ],
+    "indexes": [
+        { "columns": ["mailbox_id"], "type": "index" },
+        { "columns": ["status"], "type": "index" }
+    ],
+    "foreign_keys": [
+        { "column": "mailbox_id", "references": "id", "on": "mailboxes", "onDelete": "cascade" }
+    ],
+    "timestamps": true,
+    "soft_deletes": false
+}

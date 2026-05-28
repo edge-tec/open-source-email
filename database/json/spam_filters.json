@@ -1,0 +1,24 @@
+{
+    "table": "spam_filters",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "mailbox_id", "type": "bigInteger", "unsigned": true, "nullable": true },
+        { "name": "domain_id", "type": "bigInteger", "unsigned": true, "nullable": true },
+        { "name": "filter_type", "type": "enum", "allowed": ["whitelist", "blacklist", "custom_rule"] },
+        { "name": "value", "type": "string", "length": 255, "comment": "Email address or domain pattern" },
+        { "name": "action", "type": "enum", "allowed": ["allow", "reject", "quarantine", "tag"], "default": "reject" },
+        { "name": "priority", "type": "integer", "default": 0 },
+        { "name": "status", "type": "enum", "allowed": ["active", "inactive"], "default": "active" }
+    ],
+    "indexes": [
+        { "columns": ["mailbox_id"], "type": "index" },
+        { "columns": ["domain_id"], "type": "index" },
+        { "columns": ["filter_type"], "type": "index" }
+    ],
+    "foreign_keys": [
+        { "column": "mailbox_id", "references": "id", "on": "mailboxes", "onDelete": "cascade" },
+        { "column": "domain_id", "references": "id", "on": "domains", "onDelete": "cascade" }
+    ],
+    "timestamps": true,
+    "soft_deletes": false
+}

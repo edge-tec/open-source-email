@@ -1,0 +1,34 @@
+{
+    "table": "mailboxes",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "user_id", "type": "bigInteger", "unsigned": true },
+        { "name": "domain_id", "type": "bigInteger", "unsigned": true },
+        { "name": "local_part", "type": "string", "length": 255, "comment": "Username before @" },
+        { "name": "email", "type": "string", "length": 255, "unique": true },
+        { "name": "password", "type": "string", "length": 255, "comment": "Hashed password for IMAP/SMTP auth" },
+        { "name": "name", "type": "string", "length": 255, "nullable": true },
+        { "name": "quota", "type": "integer", "default": 1024, "comment": "Quota in MB" },
+        { "name": "used_quota", "type": "bigInteger", "default": 0, "comment": "Used storage in bytes" },
+        { "name": "status", "type": "enum", "allowed": ["active", "inactive", "suspended"], "default": "active" },
+        { "name": "maildir", "type": "string", "length": 255, "comment": "Maildir path" },
+        { "name": "signature", "type": "text", "nullable": true },
+        { "name": "is_catchall", "type": "boolean", "default": false },
+        { "name": "send_only", "type": "boolean", "default": false },
+        { "name": "last_login_at", "type": "timestamp", "nullable": true },
+        { "name": "last_login_ip", "type": "string", "length": 45, "nullable": true },
+        { "name": "msg_count", "type": "integer", "default": 0 }
+    ],
+    "indexes": [
+        { "columns": ["user_id"], "type": "index" },
+        { "columns": ["domain_id"], "type": "index" },
+        { "columns": ["local_part", "domain_id"], "type": "unique" },
+        { "columns": ["status"], "type": "index" }
+    ],
+    "foreign_keys": [
+        { "column": "user_id", "references": "id", "on": "users", "onDelete": "cascade" },
+        { "column": "domain_id", "references": "id", "on": "domains", "onDelete": "cascade" }
+    ],
+    "timestamps": true,
+    "soft_deletes": true
+}

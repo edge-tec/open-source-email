@@ -1,0 +1,18 @@
+{
+    "table": "forwarding_rules",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "mailbox_id", "type": "bigInteger", "unsigned": true },
+        { "name": "destination", "type": "string", "length": 255 },
+        { "name": "keep_copy", "type": "boolean", "default": true },
+        { "name": "status", "type": "enum", "allowed": ["active", "inactive"], "default": "active" }
+    ],
+    "indexes": [
+        { "columns": ["mailbox_id"], "type": "index" }
+    ],
+    "foreign_keys": [
+        { "column": "mailbox_id", "references": "id", "on": "mailboxes", "onDelete": "cascade" }
+    ],
+    "timestamps": true,
+    "soft_deletes": false
+}

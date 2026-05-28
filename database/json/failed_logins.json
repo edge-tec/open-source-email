@@ -1,0 +1,20 @@
+{
+    "table": "failed_logins",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "ip_address", "type": "string", "length": 45 },
+        { "name": "email", "type": "string", "length": 255, "nullable": true },
+        { "name": "user_agent", "type": "text", "nullable": true },
+        { "name": "service", "type": "enum", "allowed": ["web", "imap", "smtp", "pop3", "api"], "default": "web" },
+        { "name": "is_banned", "type": "boolean", "default": false },
+        { "name": "banned_until", "type": "timestamp", "nullable": true }
+    ],
+    "indexes": [
+        { "columns": ["ip_address"], "type": "index" },
+        { "columns": ["email"], "type": "index" },
+        { "columns": ["created_at"], "type": "index" }
+    ],
+    "foreign_keys": [],
+    "timestamps": true,
+    "soft_deletes": false
+}

@@ -1,0 +1,32 @@
+{
+    "table": "users",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "name", "type": "string", "length": 255 },
+        { "name": "email", "type": "string", "length": 255, "unique": true },
+        { "name": "email_verified_at", "type": "timestamp", "nullable": true },
+        { "name": "password", "type": "string", "length": 255 },
+        { "name": "role", "type": "enum", "allowed": ["super_admin", "admin", "reseller", "user"], "default": "user" },
+        { "name": "status", "type": "enum", "allowed": ["active", "inactive", "suspended"], "default": "active" },
+        { "name": "max_domains", "type": "integer", "default": 1 },
+        { "name": "max_mailboxes", "type": "integer", "default": 10 },
+        { "name": "max_quota", "type": "integer", "default": 1024, "comment": "Max storage in MB" },
+        { "name": "avatar", "type": "string", "length": 255, "nullable": true },
+        { "name": "timezone", "type": "string", "length": 64, "default": "UTC" },
+        { "name": "language", "type": "string", "length": 10, "default": "en" },
+        { "name": "last_login_at", "type": "timestamp", "nullable": true },
+        { "name": "last_login_ip", "type": "string", "length": 45, "nullable": true },
+        { "name": "parent_id", "type": "bigInteger", "unsigned": true, "nullable": true, "comment": "Reseller parent ID" },
+        { "name": "remember_token", "type": "string", "length": 100, "nullable": true }
+    ],
+    "indexes": [
+        { "columns": ["role"], "type": "index" },
+        { "columns": ["status"], "type": "index" },
+        { "columns": ["parent_id"], "type": "index" }
+    ],
+    "foreign_keys": [
+        { "column": "parent_id", "references": "id", "on": "users", "onDelete": "set null" }
+    ],
+    "timestamps": true,
+    "soft_deletes": true
+}

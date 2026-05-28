@@ -1,0 +1,39 @@
+{
+    "table": "email_logs",
+    "columns": [
+        { "name": "id", "type": "bigIncrements" },
+        { "name": "mailbox_id", "type": "bigInteger", "unsigned": true, "nullable": true },
+        { "name": "domain_id", "type": "bigInteger", "unsigned": true, "nullable": true },
+        { "name": "message_id", "type": "string", "length": 255, "nullable": true },
+        { "name": "direction", "type": "enum", "allowed": ["inbound", "outbound"] },
+        { "name": "sender", "type": "string", "length": 255 },
+        { "name": "recipient", "type": "string", "length": 255 },
+        { "name": "subject", "type": "string", "length": 500, "nullable": true },
+        { "name": "size", "type": "bigInteger", "default": 0, "comment": "Size in bytes" },
+        { "name": "status", "type": "enum", "allowed": ["queued", "sent", "delivered", "deferred", "bounced", "rejected", "spam"], "default": "queued" },
+        { "name": "dsn_code", "type": "string", "length": 20, "nullable": true },
+        { "name": "error_message", "type": "text", "nullable": true },
+        { "name": "client_ip", "type": "string", "length": 45, "nullable": true },
+        { "name": "server_ip", "type": "string", "length": 45, "nullable": true },
+        { "name": "spam_score", "type": "decimal", "precision": 5, "scale": 2, "nullable": true },
+        { "name": "is_spam", "type": "boolean", "default": false },
+        { "name": "has_attachment", "type": "boolean", "default": false },
+        { "name": "delivered_at", "type": "timestamp", "nullable": true }
+    ],
+    "indexes": [
+        { "columns": ["mailbox_id"], "type": "index" },
+        { "columns": ["domain_id"], "type": "index" },
+        { "columns": ["direction"], "type": "index" },
+        { "columns": ["status"], "type": "index" },
+        { "columns": ["sender"], "type": "index" },
+        { "columns": ["recipient"], "type": "index" },
+        { "columns": ["created_at"], "type": "index" },
+        { "columns": ["message_id"], "type": "index" }
+    ],
+    "foreign_keys": [
+        { "column": "mailbox_id", "references": "id", "on": "mailboxes", "onDelete": "set null" },
+        { "column": "domain_id", "references": "id", "on": "domains", "onDelete": "set null" }
+    ],
+    "timestamps": true,
+    "soft_deletes": false
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo $__env->yieldContent('title', 'Dashboard'); ?> - EdgeMail Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1a1f35;--bg4:#1f2544;--border:#2a3154;--t1:#f1f5f9;--t2:#94a3b8;--t3:#64748b;--accent:#6366f1;--accent2:#818cf8;--glow:rgba(99,102,241,.3);--ok:#10b981;--err:#ef4444;--warn:#f59e0b;--info:#3b82f6}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);display:flex;min-height:100vh}
+        /* Sidebar */
+        .sidebar{width:260px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto;z-index:50}
+        .sidebar-brand{padding:1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem}
+        .sidebar-brand-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),#8b5cf6);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+        .sidebar-brand h2{font-size:1rem;font-weight:700}
+        .sidebar-nav{padding:.75rem;flex:1}
+        .nav-section{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);padding:.75rem .5rem .25rem;font-weight:600}
+        .nav-link{display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;border-radius:8px;color:var(--t2);font-size:.85rem;text-decoration:none;transition:all .15s;margin-bottom:2px}
+        .nav-link:hover{background:var(--bg3);color:var(--t1)}
+        .nav-link.active{background:rgba(99,102,241,.15);color:var(--accent2)}
+        .nav-icon{width:18px;text-align:center}
+        .sidebar-footer{padding:1rem;border-top:1px solid var(--border)}
+        .user-info{display:flex;align-items:center;gap:.5rem}
+        .user-avatar{width:32px;height:32px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;color:white}
+        .user-name{font-size:.8rem;font-weight:600}.user-email{font-size:.7rem;color:var(--t3)}
+        /* Main content */
+        .main{flex:1;margin-left:260px;min-height:100vh}
+        .topbar{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--bg2)}
+        .topbar h1{font-size:1.25rem;font-weight:700}
+        .content{padding:1.5rem}
+        /* Cards */
+        .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
+        .stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1.25rem}
+        .stat-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);margin-bottom:.25rem}
+        .stat-value{font-size:1.75rem;font-weight:700}
+        .stat-change{font-size:.75rem;margin-top:.25rem}
+        /* Table */
+        .table-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+        .table-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+        .table-title{font-size:.9rem;font-weight:600}
+        table{width:100%;border-collapse:collapse}
+        th{text-align:left;padding:.75rem 1.25rem;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);border-bottom:1px solid var(--border);font-weight:600}
+        td{padding:.75rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.03);font-size:.85rem;color:var(--t2)}
+        tr:hover td{background:rgba(255,255,255,.02)}
+        /* Badges */
+        .badge{display:inline-block;padding:.15rem .6rem;border-radius:20px;font-size:.7rem;font-weight:600}
+        .badge-ok{background:rgba(16,185,129,.15);color:var(--ok)}.badge-err{background:rgba(239,68,68,.15);color:var(--err)}.badge-warn{background:rgba(245,158,11,.15);color:var(--warn)}.badge-info{background:rgba(59,130,246,.15);color:var(--info)}
+        /* Buttons */
+        .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:8px;font-size:.8rem;font-weight:600;border:none;cursor:pointer;text-decoration:none;transition:all .15s;font-family:inherit}
+        .btn-primary{background:var(--accent);color:white}.btn-primary:hover{background:var(--accent2)}
+        .btn-secondary{background:var(--bg2);color:var(--t2);border:1px solid var(--border)}.btn-secondary:hover{background:var(--bg3)}
+        .btn-sm{padding:.35rem .7rem;font-size:.75rem}
+        .btn-danger{background:rgba(239,68,68,.15);color:var(--err)}.btn-danger:hover{background:rgba(239,68,68,.25)}
+        /* Form */
+        .form-group{margin-bottom:1rem}.form-label{display:block;font-size:.75rem;font-weight:600;color:var(--t3);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.05em}
+        .form-input{width:100%;padding:.6rem .85rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--t1);font-size:.85rem;font-family:inherit;outline:none;transition:border .2s}
+        .form-input:focus{border-color:var(--accent)}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+        /* Alert */
+        .alert{padding:.75rem 1rem;border-radius:8px;font-size:.8rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+        .alert-success{background:rgba(16,185,129,.1);color:var(--ok);border:1px solid rgba(16,185,129,.2)}
+        .alert-danger{background:rgba(239,68,68,.1);color:var(--err);border:1px solid rgba(239,68,68,.2)}
+        /* Pagination */
+        .pagination{display:flex;gap:.25rem;margin-top:1rem;justify-content:center}
+        .pagination a,.pagination span{padding:.4rem .7rem;border-radius:6px;font-size:.8rem;text-decoration:none;color:var(--t2)}
+        .pagination a:hover{background:var(--bg3)}.pagination .active span{background:var(--accent);color:white}
+        /* Mobile */
+        @media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.form-row{grid-template-columns:1fr}.stat-grid{grid-template-columns:1fr 1fr}}
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">✉️</div>
+            <h2>EdgeMail</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">Overview</div>
+            <a href="<?php echo e(route('admin.dashboard')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.dashboard') ? 'active' : ''); ?>"><span class="nav-icon">📊</span> Dashboard</a>
+
+            <div class="nav-section">Management</div>
+            <a href="<?php echo e(route('admin.domains.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.domains.*') ? 'active' : ''); ?>"><span class="nav-icon">🌐</span> Domains</a>
+            <a href="<?php echo e(route('admin.users.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.users.*') ? 'active' : ''); ?>"><span class="nav-icon">👥</span> Users</a>
+            <a href="<?php echo e(route('admin.mailboxes.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.mailboxes.*') ? 'active' : ''); ?>"><span class="nav-icon">📬</span> Mailboxes</a>
+            <a href="<?php echo e(route('admin.aliases.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.aliases.*') ? 'active' : ''); ?>"><span class="nav-icon">🔀</span> Aliases</a>
+
+            <div class="nav-section">Monitoring</div>
+            <a href="<?php echo e(route('admin.logs.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.logs.*') ? 'active' : ''); ?>"><span class="nav-icon">📋</span> SMTP Logs</a>
+            <a href="<?php echo e(route('admin.queue.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.queue.*') ? 'active' : ''); ?>"><span class="nav-icon">📤</span> Queue</a>
+            <a href="<?php echo e(route('admin.spam.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.spam.*') ? 'active' : ''); ?>"><span class="nav-icon">🛡️</span> Spam</a>
+            <a href="<?php echo e(route('admin.storage.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.storage.*') ? 'active' : ''); ?>"><span class="nav-icon">💾</span> Storage</a>
+            <a href="<?php echo e(route('admin.security.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.security.*') ? 'active' : ''); ?>"><span class="nav-icon">🔒</span> Security</a>
+
+            <div class="nav-section">Webmail</div>
+            <a href="<?php echo e(route('webmail.inbox')); ?>" class="nav-link"><span class="nav-icon">📧</span> Open Webmail</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar"><?php echo e(strtoupper(substr(auth()->user()->name ?? 'A', 0, 1))); ?></div>
+                <div>
+                    <div class="user-name"><?php echo e(auth()->user()->name ?? 'Admin'); ?></div>
+                    <div class="user-email"><?php echo e(auth()->user()->email ?? ''); ?></div>
+                </div>
+            </div>
+            <form method="POST" action="<?php echo e(route('logout')); ?>" style="margin-top:.75rem">
+                <?php echo csrf_field(); ?>
+                <button type="submit" class="btn btn-secondary btn-sm" style="width:100%">Logout</button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <h1><?php echo $__env->yieldContent('title', 'Dashboard'); ?></h1>
+            <div><?php echo $__env->yieldContent('actions'); ?></div>
+        </div>
+        <div class="content">
+            <?php if(session('success')): ?>
+                <div class="alert alert-success">✓ <?php echo e(session('success')); ?></div>
+            <?php endif; ?>
+            <?php if($errors->any()): ?>
+                <div class="alert alert-danger">⚠️ <?php echo e($errors->first()); ?></div>
+            <?php endif; ?>
+            <?php echo $__env->yieldContent('content'); ?>
+        </div>
+    </main>
+</body>
+</html>
+<?php /**PATH /var/www/html/resources/views/admin/layout.blade.php ENDPATH**/ ?>
