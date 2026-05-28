@@ -204,4 +204,21 @@ class DomainController extends Controller
             'status' => $status
         ]);
     }
+
+    public function verifySsl(Domain $domain)
+    {
+        $hostname = "mail.{$domain->domain}";
+        $sslPath = base_path("docker/mailserver/letsencrypt/live/{$hostname}");
+        
+        $hasFullchain = file_exists("{$sslPath}/fullchain.pem");
+        $hasPrivkey = file_exists("{$sslPath}/privkey.pem");
+        
+        $verified = $hasFullchain && $hasPrivkey;
+        
+        return response()->json([
+            'success' => true,
+            'verified' => $verified,
+            'message' => $verified ? 'SSL Verified Successfully' : 'SSL certificate not found or incomplete.'
+        ]);
+    }
 }

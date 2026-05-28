@@ -77,7 +77,16 @@
     </div>
 
     <div class="table-card" style="padding:1.5rem;margin-bottom:1.5rem">
-        <h3 style="font-size:.9rem;font-weight:600;margin-bottom:1rem">SSL Configuration (SNI)</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
+            <h3 style="font-size:.9rem;font-weight:600;margin:0">SSL Configuration (SNI)</h3>
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <span id="sslStatusBadge" class="badge" style="background:var(--bg4);color:var(--t2)">Status: Unknown</span>
+                <button type="button" class="btn btn-secondary btn-sm" id="verifySslBtn">
+                    <span id="verifySslText">Verify SSL</span>
+                    <span id="verifySslSpinner" style="display:none;">⏳</span>
+                </button>
+            </div>
+        </div>
         <p style="font-size:.85rem;color:var(--t2);margin-bottom:1rem">Upload a custom SSL certificate for <strong>mail.{{ $domain->domain }}</strong> to enable secure connections for this domain.</p>
         <form method="POST" action="{{ route('admin.domains.ssl', $domain) }}">
             @csrf
@@ -152,6 +161,50 @@
                     // Reset button state
                     btn.disabled = false;
                     text.innerText = "Verify DNS Records";
+                    spinner.style.display = "none";
+                });
+        });
+
+        document.getElementById('verifySslBtn')?.addEventListener('click', function() {
+            const btn = this;
+            const text = document.getElementById('verifySslText');
+            const spinner = document.getElementById('verifySslSpinner');
+            const statusBadge = document.getElementById('sslStatusBadge');
+            
+            // Set loading state
+            btn.disabled = true;
+            text.innerText = "Verifying...";
+            spinner.style.display = "inline-block";
+            statusBadge.innerHTML = "Checking...";
+            statusBadge.style.background = "var(--info)";
+            statusBadge.style.color = "white";
+
+            // Perform fetch
+            fetch("{{ route('admin.domains.verify-ssl', $domain) }}")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.verified) {
+                            statusBadge.innerHTML = "✅ SSL Verified Successfully";
+                            statusBadge.style.background = "rgba(16,185,129,.15)";
+                            statusBadge.style.color = "var(--ok)";
+                        } else {
+                            statusBadge.innerHTML = "❌ " + data.message;
+                            statusBadge.style.background = "rgba(239,68,68,.15)";
+                            statusBadge.style.color = "var(--err)";
+                        }
+                    } else {
+                        alert("Failed to verify SSL. Please try again.");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("A network error occurred.");
+                })
+                .finally(() => {
+                    // Reset button state
+                    btn.disabled = false;
+                    text.innerText = "Verify SSL";
                     spinner.style.display = "none";
                 });
         });
