@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Domain;
 use App\Models\DkimKey;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class DomainController extends Controller
 {
@@ -28,7 +29,7 @@ class DomainController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'domain' => 'required|string|unique:domains,domain|max:255',
+            'domain' => ['required', 'string', 'max:255', Rule::unique('domains')->whereNull('deleted_at')],
             'max_mailboxes' => 'integer|min:1',
             'max_aliases' => 'integer|min:1',
             'max_quota' => 'integer|min:1',
@@ -64,7 +65,7 @@ class DomainController extends Controller
     public function update(Request $request, Domain $domain)
     {
         $request->validate([
-            'domain' => 'required|string|unique:domains,domain,' . $domain->id,
+            'domain' => ['required', 'string', Rule::unique('domains')->ignore($domain->id)->whereNull('deleted_at')],
             'status' => 'in:active,inactive,pending',
         ]);
 
