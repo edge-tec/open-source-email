@@ -29,11 +29,23 @@ class ImapService
         } elseif ($this->encryption === 'tls') {
             $flags = '/imap/tls/novalidate-cert';
         }
-        $mailbox = "{{$this->host}:{$this->port}{$flags}}{$folder}";
+        $mailboxRef = "{{$this->host}:{$this->port}{$flags}}{$folder}";
 
         $password = session()->has('webmail_password') ? decrypt(session('webmail_password')) : $this->mailbox->password;
 
-        $this->connection = @imap_open($mailbox, $this->mailbox->email, $password);
+        $this->connection = @imap_open($mailboxRef, $this->mailbox->email, $password);
+
+        // Fallback for internal Docker networks where port 993 might be refused
+        // because no SSL cert is bound yet, but port 143 works perfectly.
+        if (!$this->connection && $this->port === 993) {
+            $fallbackRef = "{{$this->host}:143/imap/notls}{$folder}";
+            $this->connection = @imap_open($fallbackRef, $this->mailbox->email, $password);
+            if ($this->connection) {
+                // Update instance variables so subsequent calls (like getFolders) use the working port
+                $this->port = 143;
+                $this->encryption = 'none';
+            }
+        }
 
         if (!$this->connection) {
             throw new \RuntimeException('IMAP connection failed: ' . imap_last_error());
