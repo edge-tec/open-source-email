@@ -171,7 +171,7 @@ class DomainController extends Controller
         // 1. Check MX
         $mxRecords = @dns_get_record($domain->domain, DNS_MX);
         if ($mxRecords) {
-            $expectedHost = config('edgemail.hostname');
+            $expectedHost = "mail.{$domain->domain}";
             foreach ($mxRecords as $record) {
                 if (isset($record['target']) && str_ends_with(strtolower($record['target']), strtolower($expectedHost))) {
                     $status['mx'] = true;
