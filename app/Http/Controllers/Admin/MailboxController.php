@@ -41,27 +41,40 @@ class MailboxController extends Controller
         $domain = Domain::findOrFail($request->domain_id);
         $email = strtolower($request->local_part) . '@' . $domain->domain;
 
-        // Check uniqueness
-        if (Mailbox::where('email', $email)->exists()) {
+        $existingMailbox = Mailbox::withTrashed()->where('email', $email)->first();
+
+        if ($existingMailbox && !$existingMailbox->trashed()) {
             return back()->withErrors(['local_part' => 'This mailbox already exists.']);
         }
 
-        // Check domain mailbox limit
+        // Check domain mailbox limit (only if we are actually adding a new active mailbox)
         if ($domain->mailboxes()->count() >= $domain->max_mailboxes) {
             return back()->withErrors(['domain_id' => 'Domain has reached maximum mailbox limit.']);
         }
 
-        Mailbox::create([
-            'user_id' => auth()->id(),
-            'domain_id' => $domain->id,
-            'local_part' => strtolower($request->local_part),
-            'email' => $email,
-            'password' => Hash::make($request->password),
-            'name' => $request->name,
-            'quota' => $request->quota ?? 1024,
-            'status' => 'active',
-            'maildir' => $domain->domain . '/' . strtolower($request->local_part) . '/Maildir/',
-        ]);
+        if ($existingMailbox && $existingMailbox->trashed()) {
+            $existingMailbox->restore();
+            $existingMailbox->update([
+                'user_id' => auth()->id(),
+                'password' => Hash::make($request->password),
+                'name' => $request->name,
+                'quota' => $request->quota ?? 1024,
+                'status' => 'active',
+            ]);
+            $mailbox = $existingMailbox;
+        } else {
+            $mailbox = Mailbox::create([
+                'user_id' => auth()->id(),
+                'domain_id' => $domain->id,
+                'local_part' => strtolower($request->local_part),
+                'email' => $email,
+                'password' => Hash::make($request->password),
+                'name' => $request->name,
+                'quota' => $request->quota ?? 1024,
+                'status' => 'active',
+                'maildir' => $domain->domain . '/' . strtolower($request->local_part) . '/Maildir/',
+            ]);
+        }
 
         app(MailServerSyncService::class)->syncAccounts();
 
