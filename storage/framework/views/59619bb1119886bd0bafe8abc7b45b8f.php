@@ -5,23 +5,87 @@
         <div class="stat-card"><div class="stat-label">Aliases</div><div class="stat-value"><?php echo e($domain->aliases->count()); ?>/<?php echo e($domain->max_aliases); ?></div></div>
     </div>
 
-    <div class="table-card" style="padding:1.5rem;margin-bottom:1.5rem">
-        <h3 style="font-size:.9rem;font-weight:600;margin-bottom:1rem">DNS Records</h3>
-        <div style="background:var(--bg);padding:1rem;border-radius:8px;font-family:monospace;font-size:.8rem;color:var(--t2);margin-bottom:.75rem;word-wrap:break-word;overflow-wrap:break-word;word-break:break-word;">
-            <div style="margin-bottom:.5rem"><strong style="color:var(--t1)">MX Record:</strong> <?php echo e($domain->domain); ?>. IN MX 10 <?php echo e(config('edgemail.hostname')); ?>.</div>
-            <div style="margin-bottom:.5rem"><strong style="color:var(--t1)">SPF:</strong> <?php echo e($domain->spf_record ?? 'v=spf1 mx a ~all'); ?></div>
-            <div style="margin-bottom:.5rem"><strong style="color:var(--t1)">DMARC:</strong> <?php echo e($domain->dmarc_record ?? 'Not configured'); ?></div>
-            <?php if($domain->dkim_enabled && $domain->dkimKeys->count()): ?>
-            <div style="word-break:break-all;"><strong style="color:var(--t1)">DKIM:</strong> <?php echo e($domain->dkimKeys->first()->dns_record ?? 'Key generated'); ?></div>
-            <?php endif; ?>
+    <div class="table-card" style="margin-bottom:1.5rem">
+        <div class="table-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="table-title">DNS Configuration</div>
+            <div>
+                <button type="button" class="btn btn-primary btn-sm" id="verifyDnsBtn">
+                    <span id="verifyDnsText">Verify DNS Records</span>
+                    <span id="verifyDnsSpinner" style="display:none;">⏳</span>
+                </button>
+            </div>
         </div>
-        <?php if(!$domain->dkim_enabled): ?>
-        <form method="POST" action="<?php echo e(route('admin.domains.generate-dkim', $domain)); ?>"><?php echo csrf_field(); ?><button class="btn btn-primary btn-sm">Generate DKIM Key</button></form>
-        <?php endif; ?>
+        <div style="padding:1.5rem; overflow-x:auto;">
+            <p style="font-size:.85rem;color:var(--t2);margin-bottom:1rem">
+                Add these records to your domain's DNS manager (e.g. Cloudflare, GoDaddy). Changes may take a few minutes to propagate.
+            </p>
+            
+            <table style="width:100%; border-collapse: collapse; min-width: 600px;">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">Type</th>
+                        <th style="width: 25%;">Host / Name</th>
+                        <th style="width: 50%;">Value / Data</th>
+                        <th style="width: 15%; text-align:center;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- MX Record -->
+                    <tr>
+                        <td style="font-weight:600; color:var(--t1);">MX</td>
+                        <td style="font-family:monospace; font-size:.8rem;">@ <em>(or <?php echo e($domain->domain); ?>)</em></td>
+                        <td style="font-family:monospace; font-size:.8rem; word-break:break-all;">10 mail.<?php echo e($domain->domain); ?></td>
+                        <td style="text-align:center;" id="status-mx"><span class="badge" style="background:var(--bg4);color:var(--t2)">Pending</span></td>
+                    </tr>
+                    
+                    <!-- SPF Record -->
+                    <tr>
+                        <td style="font-weight:600; color:var(--t1);">TXT <span style="font-size:.7rem;color:var(--t3)">(SPF)</span></td>
+                        <td style="font-family:monospace; font-size:.8rem;">@</td>
+                        <td style="font-family:monospace; font-size:.8rem; word-break:break-all;"><?php echo e($domain->spf_record ?? 'v=spf1 mx a ~all'); ?></td>
+                        <td style="text-align:center;" id="status-spf"><span class="badge" style="background:var(--bg4);color:var(--t2)">Pending</span></td>
+                    </tr>
+                    
+                    <!-- DMARC Record -->
+                    <tr>
+                        <td style="font-weight:600; color:var(--t1);">TXT <span style="font-size:.7rem;color:var(--t3)">(DMARC)</span></td>
+                        <td style="font-family:monospace; font-size:.8rem;">_dmarc</td>
+                        <td style="font-family:monospace; font-size:.8rem; word-break:break-all;"><?php echo e($domain->dmarc_record ?? 'Not configured'); ?></td>
+                        <td style="text-align:center;" id="status-dmarc"><span class="badge" style="background:var(--bg4);color:var(--t2)">Pending</span></td>
+                    </tr>
+                    
+                    <!-- DKIM Record -->
+                    <tr>
+                        <td style="font-weight:600; color:var(--t1);">TXT <span style="font-size:.7rem;color:var(--t3)">(DKIM)</span></td>
+                        <?php if($domain->dkim_enabled && $domain->dkimKeys->count()): ?>
+                            <td style="font-family:monospace; font-size:.8rem;"><?php echo e($domain->dkim_selector); ?>._domainkey</td>
+                            <td style="font-family:monospace; font-size:.8rem; word-break:break-all;"><?php echo e($domain->dkimKeys->first()->dns_record); ?></td>
+                            <td style="text-align:center;" id="status-dkim"><span class="badge" style="background:var(--bg4);color:var(--t2)">Pending</span></td>
+                        <?php else: ?>
+                            <td colspan="3">
+                                <form method="POST" action="<?php echo e(route('admin.domains.generate-dkim', $domain)); ?>" style="display:inline;">
+                                    <?php echo csrf_field(); ?>
+                                    <button class="btn btn-secondary btn-sm">Generate DKIM Key</button>
+                                </form>
+                            </td>
+                        <?php endif; ?>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="table-card" style="padding:1.5rem;margin-bottom:1.5rem">
-        <h3 style="font-size:.9rem;font-weight:600;margin-bottom:1rem">SSL Configuration (SNI)</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
+            <h3 style="font-size:.9rem;font-weight:600;margin:0">SSL Configuration (SNI)</h3>
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <span id="sslStatusBadge" class="badge" style="background:var(--bg4);color:var(--t2)">Status: Unknown</span>
+                <button type="button" class="btn btn-secondary btn-sm" id="verifySslBtn">
+                    <span id="verifySslText">Verify SSL</span>
+                    <span id="verifySslSpinner" style="display:none;">⏳</span>
+                </button>
+            </div>
+        </div>
         <p style="font-size:.85rem;color:var(--t2);margin-bottom:1rem">Upload a custom SSL certificate for <strong>mail.<?php echo e($domain->domain); ?></strong> to enable secure connections for this domain.</p>
         <form method="POST" action="<?php echo e(route('admin.domains.ssl', $domain)); ?>">
             <?php echo csrf_field(); ?>
@@ -50,6 +114,100 @@
             </tbody>
         </table>
     </div>
+
+    <script>
+        document.getElementById('verifyDnsBtn')?.addEventListener('click', function() {
+            const btn = this;
+            const text = document.getElementById('verifyDnsText');
+            const spinner = document.getElementById('verifyDnsSpinner');
+            
+            // Set loading state
+            btn.disabled = true;
+            text.innerText = "Verifying...";
+            spinner.style.display = "inline-block";
+            
+            // Reset statuses to 'Checking...'
+            const records = ['mx', 'spf', 'dmarc', 'dkim'];
+            records.forEach(type => {
+                const el = document.getElementById(`status-${type}`);
+                if (el) el.innerHTML = `<span class="badge" style="background:var(--info);color:white">Checking</span>`;
+            });
+
+            // Perform fetch
+            fetch("<?php echo e(route('admin.domains.verify-dns', $domain)); ?>")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.status) {
+                        records.forEach(type => {
+                            const el = document.getElementById(`status-${type}`);
+                            if (el && data.status[type] !== undefined) {
+                                if (data.status[type] === true) {
+                                    el.innerHTML = `<span class="badge badge-ok">✅ Verified</span>`;
+                                } else {
+                                    el.innerHTML = `<span class="badge badge-err">❌ Missing</span>`;
+                                }
+                            }
+                        });
+                    } else {
+                        alert("Failed to verify DNS. Please try again.");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("A network error occurred.");
+                })
+                .finally(() => {
+                    // Reset button state
+                    btn.disabled = false;
+                    text.innerText = "Verify DNS Records";
+                    spinner.style.display = "none";
+                });
+        });
+
+        document.getElementById('verifySslBtn')?.addEventListener('click', function() {
+            const btn = this;
+            const text = document.getElementById('verifySslText');
+            const spinner = document.getElementById('verifySslSpinner');
+            const statusBadge = document.getElementById('sslStatusBadge');
+            
+            // Set loading state
+            btn.disabled = true;
+            text.innerText = "Verifying...";
+            spinner.style.display = "inline-block";
+            statusBadge.innerHTML = "Checking...";
+            statusBadge.style.background = "var(--info)";
+            statusBadge.style.color = "white";
+
+            // Perform fetch
+            fetch("<?php echo e(route('admin.domains.verify-ssl', $domain)); ?>")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.verified) {
+                            statusBadge.innerHTML = "✅ SSL Verified Successfully";
+                            statusBadge.style.background = "rgba(16,185,129,.15)";
+                            statusBadge.style.color = "var(--ok)";
+                        } else {
+                            statusBadge.innerHTML = "❌ " + data.message;
+                            statusBadge.style.background = "rgba(239,68,68,.15)";
+                            statusBadge.style.color = "var(--err)";
+                        }
+                    } else {
+                        alert("Failed to verify SSL. Please try again.");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("A network error occurred.");
+                })
+                .finally(() => {
+                    // Reset button state
+                    btn.disabled = false;
+                    text.innerText = "Verify SSL";
+                    spinner.style.display = "none";
+                });
+        });
+    </script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('admin.layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /var/www/html/resources/views/admin/domains/show.blade.php ENDPATH**/ ?>

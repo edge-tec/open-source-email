@@ -60,7 +60,7 @@
                         <td style="font-weight:600; color:var(--t1);">TXT <span style="font-size:.7rem;color:var(--t3)">(DKIM)</span></td>
                         @if($domain->dkim_enabled && $domain->dkimKeys->count())
                             <td style="font-family:monospace; font-size:.8rem;">{{ $domain->dkim_selector }}._domainkey</td>
-                            <td style="font-family:monospace; font-size:.8rem; word-break:break-all;">{{ $domain->dkimKeys->first()->dns_record }}</td>
+                            <td style="font-family:monospace; font-size:.8rem; word-break:break-all;">{{ trim(str_replace('"', '', Str::after($domain->dkimKeys->first()->dns_record, 'TXT '))) }}</td>
                             <td style="text-align:center;" id="status-dkim"><span class="badge" style="background:var(--bg4);color:var(--t2)">Pending</span></td>
                         @else
                             <td colspan="3">
