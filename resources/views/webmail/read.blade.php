@@ -96,9 +96,9 @@
         </div>
     </div>
     
-    <div class="read-body">
+    <div class="read-body" @if($message['body_html']) style="padding:0; overflow:hidden; position:relative; background:#fff;" @endif>
         @if($message['body_html'])
-            {!! $message['body_html'] !!}
+            <iframe srcdoc="{{ $message['body_html'] }}" class="email-iframe" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin" onload="makeIframeResponsive(this)" style="width:100%; height:100%; border:none; position:absolute; top:0; left:0; display:block;"></iframe>
         @else
             <div style="white-space:pre-wrap;font-family:monospace">{{ $message['body_text'] }}</div>
         @endif
@@ -115,4 +115,72 @@
     </div>
     @endif
 </div>
+
+@endsection
+
+@section('scripts')
+<script>
+function makeIframeResponsive(iframe) {
+    try {
+        var doc = iframe.contentDocument || iframe.contentWindow.document;
+        
+        // Add viewport meta if not exists
+        if (!doc.querySelector('meta[name="viewport"]')) {
+            var meta = doc.createElement('meta');
+            meta.name = "viewport";
+            meta.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
+            doc.head.appendChild(meta);
+        }
+
+        // Add responsive CSS to ensure tables and images scale down
+        var style = doc.createElement('style');
+        style.innerHTML = `
+            * {
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            body { 
+                margin: 0 !important; 
+                padding: 15px !important; 
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important; 
+                overflow-x: hidden !important; /* Prevent horizontal scrolling */
+                background-color: #ffffff !important;
+                word-wrap: break-word !important;
+            }
+            img { 
+                max-width: 100% !important; 
+                height: auto !important; 
+                object-fit: contain !important;
+            }
+            /* Make tables responsive */
+            table { 
+                width: 100% !important; 
+                max-width: 100% !important;
+                table-layout: fixed !important;
+            }
+            table, tr, td, th { 
+                max-width: 100% !important; 
+                word-wrap: break-word !important;
+            }
+            @media only screen and (max-width: 768px) {
+                body { padding: 10px !important; }
+                table, tbody, tr, th, td {
+                    display: block !important;
+                    width: 100% !important;
+                    height: auto !important;
+                }
+            }
+        `;
+        doc.head.appendChild(style);
+
+        // Fix all links to open in a new tab
+        var links = doc.querySelectorAll('a');
+        links.forEach(function(link) {
+            link.setAttribute('target', '_blank');
+        });
+    } catch (e) {
+        console.error("Could not inject responsive styles into iframe", e);
+    }
+}
+</script>
 @endsection
