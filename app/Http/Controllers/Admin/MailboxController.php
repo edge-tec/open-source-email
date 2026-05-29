@@ -41,7 +41,10 @@ class MailboxController extends Controller
         $domain = Domain::findOrFail($request->domain_id);
         $email = strtolower($request->local_part) . '@' . $domain->domain;
 
-        $existingMailbox = Mailbox::withTrashed()->where('email', $email)->first();
+        $existingMailbox = Mailbox::withTrashed()
+            ->where('domain_id', $domain->id)
+            ->where('local_part', strtolower($request->local_part))
+            ->first();
 
         if ($existingMailbox && !$existingMailbox->trashed()) {
             return back()->withErrors(['local_part' => 'This mailbox already exists.']);
@@ -56,10 +59,12 @@ class MailboxController extends Controller
             $existingMailbox->restore();
             $existingMailbox->update([
                 'user_id' => auth()->id(),
+                'email' => $email, // Update email in case domain name was changed
                 'password' => Hash::make($request->password),
                 'name' => $request->name,
                 'quota' => $request->quota ?? 1024,
                 'status' => 'active',
+                'maildir' => $domain->domain . '/' . strtolower($request->local_part) . '/Maildir/',
             ]);
             $mailbox = $existingMailbox;
         } else {
