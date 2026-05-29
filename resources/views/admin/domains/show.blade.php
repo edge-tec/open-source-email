@@ -35,7 +35,7 @@
                     <tr>
                         <td style="font-weight:600; color:var(--t1);">MX</td>
                         <td style="font-family:monospace; font-size:.8rem;">@ <em>(or {{ $domain->domain }})</em></td>
-                        <td style="font-family:monospace; font-size:.8rem; word-break:break-all;">10 {{ config('edgemail.hostname') }}</td>
+                        <td style="font-family:monospace; font-size:.8rem; word-break:break-all;">10 mail.{{ $domain->domain }}</td>
                         <td style="text-align:center;" id="status-mx"><span class="badge" style="background:var(--bg4);color:var(--t2)">Pending</span></td>
                     </tr>
                     
