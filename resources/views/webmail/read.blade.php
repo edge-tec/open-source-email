@@ -103,7 +103,7 @@
             <div style="white-space:pre-wrap;font-family:monospace">{{ $message['body_text'] }}</div>
         @endif
     </div>
-    
+      
     @if(count($message['attachments']) > 0)
     <div class="attachments-area">
         <div style="font-size:.8rem;font-weight:600;margin-bottom:.5rem;color:var(--t3)">Attachments ({{ count($message['attachments']) }})</div>
