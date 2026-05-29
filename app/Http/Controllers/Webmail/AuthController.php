@@ -12,8 +12,8 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
-        // If already logged in
-        if (auth()->check() || session('webmail_auth') === true) {
+        // If already securely logged into webmail with an IMAP password
+        if (session('webmail_auth') === true && session()->has('webmail_password') && session()->has('active_mailbox_id')) {
             return redirect()->route('webmail.inbox');
         }
         return view('webmail.auth.login');

@@ -114,7 +114,10 @@ class MailboxController extends Controller
 
     public function webmailLogin(Mailbox $mailbox)
     {
-        session(['active_mailbox_id' => $mailbox->id]);
-        return redirect()->route('webmail.inbox');
+        // We cannot automatically log into IMAP because we only store bcrypt hashes
+        // of the password, and IMAP requires the plain-text password.
+        // Redirect the admin to the webmail login page with the email pre-filled.
+        return redirect()->route('webmail.login')->withInput(['email' => $mailbox->email])
+            ->with('info', 'For IMAP connectivity, please enter the mailbox password. We do not store plain-text passwords for security.');
     }
 }
