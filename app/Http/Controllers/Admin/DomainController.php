@@ -35,18 +35,36 @@ class DomainController extends Controller
             'max_quota' => 'integer|min:1',
         ]);
 
-        $domain = Domain::create([
-            'user_id' => auth()->id(),
-            'domain' => strtolower($request->domain),
-            'description' => $request->description,
-            'status' => 'active',
-            'max_mailboxes' => $request->max_mailboxes ?? 10,
-            'max_aliases' => $request->max_aliases ?? 50,
-            'max_quota' => $request->max_quota ?? 10240,
-            'transport' => 'virtual',
-            'spf_record' => config('mailserver.dns.spf_record'),
-            'dmarc_record' => str_replace('{domain}', $request->domain, config('mailserver.dns.dmarc_record')),
-        ]);
+        $existingDomain = Domain::withTrashed()->where('domain', strtolower($request->domain))->first();
+
+        if ($existingDomain && $existingDomain->trashed()) {
+            $existingDomain->restore();
+            $existingDomain->update([
+                'user_id' => auth()->id(),
+                'description' => $request->description,
+                'status' => 'active',
+                'max_mailboxes' => $request->max_mailboxes ?? 10,
+                'max_aliases' => $request->max_aliases ?? 50,
+                'max_quota' => $request->max_quota ?? 10240,
+                'transport' => 'virtual',
+                'spf_record' => config('mailserver.dns.spf_record'),
+                'dmarc_record' => str_replace('{domain}', $request->domain, config('mailserver.dns.dmarc_record')),
+            ]);
+            $domain = $existingDomain;
+        } else {
+            $domain = Domain::create([
+                'user_id' => auth()->id(),
+                'domain' => strtolower($request->domain),
+                'description' => $request->description,
+                'status' => 'active',
+                'max_mailboxes' => $request->max_mailboxes ?? 10,
+                'max_aliases' => $request->max_aliases ?? 50,
+                'max_quota' => $request->max_quota ?? 10240,
+                'transport' => 'virtual',
+                'spf_record' => config('mailserver.dns.spf_record'),
+                'dmarc_record' => str_replace('{domain}', $request->domain, config('mailserver.dns.dmarc_record')),
+            ]);
+        }
 
         return redirect()->route('admin.domains.show', $domain)->with('success', 'Domain created successfully.');
     }
