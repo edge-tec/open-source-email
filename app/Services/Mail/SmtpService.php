@@ -21,8 +21,13 @@ class SmtpService
         $cc = isset($data['cc']) ? $this->parseRecipients($data['cc']) : [];
         $bcc = isset($data['bcc']) ? $this->parseRecipients($data['bcc']) : [];
 
-        // Disable SSL verification to allow sending via self-signed or Let's Encrypt certs on internal network
+        $password = session()->has('webmail_password') ? decrypt(session('webmail_password')) : $this->mailbox->password;
+
+        // Dynamically configure the SMTP mailer to authenticate as the current mailbox user.
+        // Disable SSL verification to allow sending via self-signed or Let's Encrypt certs on internal network.
         config([
+            'mail.mailers.smtp.username' => $this->mailbox->email,
+            'mail.mailers.smtp.password' => $password,
             'mail.mailers.smtp.stream' => [
                 'ssl' => [
                     'allow_self_signed' => true,
