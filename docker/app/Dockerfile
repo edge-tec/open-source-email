@@ -32,4 +32,4 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # Run PHP-FPM
-CMD ["php-fpm"]
+CMD sh -c "chmod -R a+rwX storage bootstrap/cache docker/mailserver/config 2>/dev/null || true && php-fpm"
